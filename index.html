@@ -1,826 +1,149 @@
-<html lang="en"><script async="" defer="" src="chrome-extension://pcblbflgdkdfdjpjifeppkljdnaekohj/GdocApi.0c843771.js" type="text/javascript"></script>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolTech Asset Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-backdrop { backdrop-filter: blur(4px); }
-        .status-active {
-            background-color: #dcfce7 !important;
-            color: #166534 !important;
-            border-color: #bbf7d0 !important;
-        }
-        .status-maintenance {
-            background-color: #fef3c7 !important;
-            color: #92400e !important;
-            border-color: #fde68a !important;
-        }
-        .status-damaged {
-            background-color: #fee2e2 !important;
-            color: #dc2626 !important;
-            border-color: #fecaca !important;
-        }
-        .status-decommissioned {
-            background-color: #f3f4f6 !important;
-            color: #6b7280 !important;
-            border-color: #d1d5db !important;
-        }
-        .lease-progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background-color: #e5e7eb;
-        }
-        .lease-progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-    </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.left-3{left:0.75rem}.top-1\/2{top:50%}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-4{margin-left:1rem}.mr-2{margin-right:0.5rem}.mr-3{margin-right:0.75rem}.mt-1{margin-top:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.ml-2{margin-left:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.ml-3{margin-left:0.75rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-16{height:4rem}.h-full{height:100%}.h-8{height:2rem}.max-h-40{max-height:10rem}.max-h-screen{max-height:100vh}.min-h-screen{min-height:100vh}.w-full{width:100%}.w-8{width:2rem}.min-w-full{min-width:100%}.min-w-0{min-width:0px}.max-w-7xl{max-width:80rem}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-6{gap:1.5rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-gray-200 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(229 231 235 / var(--tw-divide-opacity, 1))}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-nowrap{white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.rounded{border-radius:0.25rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-blue-600{--tw-border-opacity:1;border-color:rgb(37 99 235 / var(--tw-border-opacity, 1))}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.border-green-200{--tw-border-opacity:1;border-color:rgb(187 247 208 / var(--tw-border-opacity, 1))}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-orange-200{--tw-border-opacity:1;border-color:rgb(254 215 170 / var(--tw-border-opacity, 1))}.border-purple-200{--tw-border-opacity:1;border-color:rgb(233 213 255 / var(--tw-border-opacity, 1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202 / var(--tw-border-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity, 1))}.bg-green-600{--tw-bg-opacity:1;background-color:rgb(22 163 74 / var(--tw-bg-opacity, 1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.bg-orange-100{--tw-bg-opacity:1;background-color:rgb(255 237 213 / var(--tw-bg-opacity, 1))}.bg-orange-200{--tw-bg-opacity:1;background-color:rgb(254 215 170 / var(--tw-bg-opacity, 1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.bg-red-200{--tw-bg-opacity:1;background-color:rgb(254 202 202 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-gray-600{--tw-bg-opacity:1;background-color:rgb(75 85 99 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.bg-orange-600{--tw-bg-opacity:1;background-color:rgb(234 88 12 / var(--tw-bg-opacity, 1))}.bg-purple-600{--tw-bg-opacity:1;background-color:rgb(147 51 234 / var(--tw-bg-opacity, 1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-purple-100{--tw-bg-opacity:1;background-color:rgb(243 232 255 / var(--tw-bg-opacity, 1))}.bg-opacity-50{--tw-bg-opacity:0.5}.bg-opacity-95{--tw-bg-opacity:0.95}.p-3{padding:0.75rem}.p-6{padding:1.5rem}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-8{padding:2rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.pl-10{padding-left:2.5rem}.pr-4{padding-right:1rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-wider{letter-spacing:0.05em}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-900{--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-orange-600{--tw-text-opacity:1;color:rgb(234 88 12 / var(--tw-text-opacity, 1))}.text-orange-700{--tw-text-opacity:1;color:rgb(194 65 12 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4 / var(--tw-text-opacity, 1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-orange-800{--tw-text-opacity:1;color:rgb(154 52 18 / var(--tw-text-opacity, 1))}.text-purple-800{--tw-text-opacity:1;color:rgb(107 33 168 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-red-800{--tw-text-opacity:1;color:rgb(153 27 27 / var(--tw-text-opacity, 1))}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-50:hover{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.hover\:bg-green-700:hover{--tw-bg-opacity:1;background-color:rgb(21 128 61 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-700:hover{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-900:hover{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.hover\:bg-orange-700:hover{--tw-bg-opacity:1;background-color:rgb(194 65 12 / var(--tw-bg-opacity, 1))}.hover\:bg-purple-700:hover{--tw-bg-opacity:1;background-color:rgb(126 34 206 / var(--tw-bg-opacity, 1))}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.hover\:text-gray-700:hover{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.hover\:text-gray-600:hover{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.hover\:text-blue-900:hover{--tw-text-opacity:1;color:rgb(30 58 138 / var(--tw-text-opacity, 1))}.hover\:text-green-900:hover{--tw-text-opacity:1;color:rgb(20 83 45 / var(--tw-text-opacity, 1))}.hover\:text-red-900:hover{--tw-text-opacity:1;color:rgb(127 29 29 / var(--tw-text-opacity, 1))}.hover\:text-purple-900:hover{--tw-text-opacity:1;color:rgb(88 28 135 / var(--tw-text-opacity, 1))}.focus\:border-transparent:focus{border-color:transparent}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-blue-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}@media (min-width: 640px){.sm\:ml-4{margin-left:1rem}.sm\:inline{display:inline}.sm\:hidden{display:none}.sm\:h-10{height:2.5rem}.sm\:w-64{width:16rem}.sm\:w-10{width:2.5rem}.sm\:flex-row{flex-direction:row}.sm\:space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.sm\:space-y-0 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0px * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0px * var(--tw-space-y-reverse))}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:table-cell{display:table-cell}.md\:hidden{display:none}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:table-cell{display:table-cell}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:flex-row{flex-direction:row}.lg\:items-center{align-items:center}.lg\:justify-between{justify-content:space-between}.lg\:space-y-0 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0px * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0px * var(--tw-space-y-reverse))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}@media (min-width: 1280px){.xl\:table-cell{display:table-cell}}</style><style>
-.--brisk-axd {
-  filter: blur(4px);
-  user-select: none;
-}
-</style>
-    </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <i class="fas fa-laptop text-blue-600 text-2xl mr-3"></i>
-                    <h1 class="text-xl font-semibold text-gray-900">SchoolTech Asset Manager</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-plus mr-2"></i>Add Asset
-                    </button>
-                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-qrcode mr-2"></i>Scan QR
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asset Manager</title>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Dashboard Stats -->
-        <div class="space-y-6 mb-8">
-            <!-- Top Row -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-blue-100">
-                            <i class="fas fa-laptop text-blue-600 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Total Assets</p>
-                            <p class="text-2xl font-semibold text-gray-900">6</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-green-100">
-                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Active</p>
-                            <p class="text-2xl font-semibold text-gray-900">6</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-yellow-100">
-                            <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Needs Attention</p>
-                            <p class="text-2xl font-semibold text-gray-900" id="needsAttentionCount">0</p>
-                            <div class="text-xs text-gray-500 mt-1">Maintenance + Damaged</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-indigo-100">
-                            <i class="fas fa-building text-indigo-600 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Ownership</p>
-                            <div class="text-xs text-gray-500 space-y-1 mt-1">
-                                <div>School: <span id="schoolOwnedCount" class="font-medium">4</span></div>
-                                <div>Lease: <span id="leaseCount" class="font-medium">1</span></div>
-                                <div>Lease-to-Own: <span id="leaseToOwnCount" class="font-medium">1</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- Tailwind CSS (dev CDN—warning is harmless) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-            <!-- Bottom Row -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-orange-100">
-                            <i class="fas fa-handshake text-orange-600 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Leases Expiring</p>
-                            <p class="text-xs text-gray-500 mb-1">(within 3 months)</p>
-                            <p class="text-2xl font-semibold text-gray-900" id="leasesExpiringCount">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-orange-200">
-                            <i class="fas fa-ban text-orange-700 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Leases Expired</p>
-                            <p class="text-2xl font-semibold text-gray-900" id="leasesExpiredCount">2</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-red-100">
-                            <i class="fas fa-calendar-times text-red-600 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Warranty Expiring</p>
-                            <p class="text-xs text-gray-500 mb-1">(within 1 month)</p>
-                            <p class="text-2xl font-semibold text-gray-900" id="warrantyExpiringCount">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-red-200">
-                            <i class="fas fa-exclamation-circle text-red-700 text-xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Warranty Expired</p>
-                            <p class="text-2xl font-semibold text-gray-900" id="warrantyExpiredCount">6</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Supabase JS client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
 
-        <!-- View Toggle Tabs -->
-        <div class="bg-white rounded-xl shadow-sm mb-6 border border-gray-100">
-            <div class="flex border-b border-gray-200">
-                <button id="activeTab" onclick="switchView('active')" class="px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50">
-                    <i class="fas fa-laptop mr-2"></i>Active Assets
-                </button>
-                <button id="archivedTab" onclick="switchView('archived')" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-archive mr-2"></i>Archived Assets
-                </button>
-                <button id="leaseBundlesTab" onclick="switchView('leaseBundles')" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50">
-                    <i class="fas fa-handshake mr-2"></i>Lease Bundles
-                </button>
-            </div>
-        </div>
-
-        <!-- Filters and Search -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input id="searchInput" type="text" placeholder="Search assets..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64" onkeyup="applyFilters()">
-                    </div>
-                    <select id="locationFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()"><option value="">All Locations</option><option value="Art Room">Art Room</option><option value="IT Department">IT Department</option><option value="Library">Library</option><option value="Room 101">Room 101</option><option value="Science Lab">Science Lab</option><option value="Staff Room">Staff Room</option></select>
-                    <select id="typeFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()">
-                        <option value="">All Types</option>
-                        <option value="Laptop">Laptop</option>
-                        <option value="Desktop">Desktop</option>
-                        <option value="iPad">iPad</option>
-                        <option value="iPhone">iPhone</option>
-                        <option value="Monitor">Monitor</option>
-                        <option value="Dock">Dock/Hub</option>
-                        <option value="Apple Pencil">Apple Pencil</option>
-                        <option value="Projector">Projector</option>
-                        <option value="Printer">Printer</option>
-                        <option value="Accessory">Accessory</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()">
-                        <option value="">All Status</option>
-                        <option value="active">Active</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="damaged">Damaged</option>
-                        <option value="decommissioned">Decommissioned</option>
-                    </select>
-                    <select id="ownershipFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()">
-                        <option value="">All Ownership</option>
-                        <option value="school-owned">School Owned</option>
-                        <option value="lease">Lease</option>
-                        <option value="lease-to-own">Lease to Own</option>
-                    </select>
-                </div>
-                <div class="flex space-x-2">
-                    <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
-                        <i class="fas fa-trash mr-2"></i>Delete Selected
-                    </button>
-                    <button id="bulkArchiveBtn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
-                        <i class="fas fa-archive mr-2"></i>Archive Selected
-                    </button>
-                    <button id="bulkRestoreBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
-                        <i class="fas fa-undo mr-2"></i>Restore Selected
-                    </button>
-                    <button id="bulkExportBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
-                        <i class="fas fa-file-export mr-2"></i>Export Selected
-                    </button>
-                    <button onclick="openExportModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-download mr-2"></i>Export
-                    </button>
-                    <button onclick="openImportModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-upload mr-2"></i>Import
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Assets Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-gray-900">Asset Inventory</h2>
-                <button id="editModeToggle" onclick="toggleEditMode()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                    <i class="fas fa-unlock mr-2"></i>Enable Edit Mode
-                </button>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr id="assetTableHeaders" class="">
-                            <th id="selectAllHeader" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden">
-                                <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Location</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Assigned To</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Ownership</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Warranty/Lease</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                        <tr id="leaseBundleTableHeaders" class="hidden">
-                            <th id="selectAllHeaderLease" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden">
-                                <input type="checkbox" id="selectAllLease" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            </th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lease Agreement</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Lease Provider</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Monthly Payment</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Total Value</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Duration</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Lease Progress</th>
-                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                   
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Code Button -->
-    <div class="fixed bottom-6 right-6">
-        <button onclick="openCodeViewer()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg">
-            <i class="fas fa-code mr-2"></i>View Code
+<body class="bg-gray-100 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Assets Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-gray-900">Asset Inventory</h2>
+        <button id="editModeToggle" onclick="toggleEditMode()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+          <i class="fas fa-unlock mr-2"></i>Enable Edit Mode
         </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr id="assetTableHeaders">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="assetTableBody" class="bg-white divide-y divide-gray-200">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
 
-    <!-- Code Viewer Modal -->
-    <div id="codeViewerModal" class="fixed inset-0 bg-black bg-opacity-95 hidden z-50">
-        <div class="flex flex-col h-full">
-            <!-- Header -->
-            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center border-b border-gray-700">
-                <h3 class="text-lg font-semibold text-white">SchoolTech Asset Manager - Source Code</h3>
-                <div class="flex space-x-3">
-                    <button onclick="copyCodeToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-copy mr-2"></i>Copy Code
-                    </button>
-                    <button onclick="closeCodeViewer()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-times mr-2"></i>Close View
-                    </button>
-                </div>
-            </div>
-            <!-- Code Content -->
-            <div class="flex-1 overflow-auto bg-gray-900">
-                <pre id="codeContent" class="text-sm text-gray-300 p-6 font-mono leading-relaxed whitespace-pre-wrap"></pre>
-            </div>
-        </div>
-    </div>
+  <!-- All your JS in one block -->
+  <script>
+    // ─── Supabase setup ────────────────────────────────────────────────────
+    const supabase = window.supabase.createClient(
+      'https://zjjzumfocopbkjqfytkb.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU'
+    );
 
-    <!-- Add/Edit Asset Modal -->
-    <div id="assetModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Add New Asset</h3>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-6">
-                    <form id="assetForm" class="space-y-6">
-                        <!-- Basic Information -->
-                        <div>
-                            <h4 class="text-md font-medium text-gray-900 mb-4">Basic Information</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
-                                    <div class="flex space-x-2">
-                                        <input type="text" name="assetId" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Auto-generated" required="">
-                                        <button type="button" onclick="generateNewAssetId()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors" title="Generate New ID">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Auto-generated but editable if needed</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Device Name</label>
-                                    <input type="text" name="deviceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Staff Laptop 01">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Device Type</label>
-                                    <select name="deviceType" onchange="updateOperatingSystemOptions()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Select Type</option>
-                                        <option value="laptop">Laptop</option>
-                                        <option value="desktop">Desktop</option>
-                                        <option value="ipad">iPad</option>
-                                        <option value="iphone">iPhone</option>
-                                        <option value="monitor">Monitor</option>
-                                        <option value="dock">Dock/Hub</option>
-                                        <option value="apple-pencil">Apple Pencil</option>
-                                        <option value="projector">Projector</option>
-                                        <option value="printer">Printer</option>
-                                        <option value="switch">Network Switch</option>
-                                        <option value="router">Router</option>
-                                        <option value="charger">Charger</option>
-                                        <option value="accessory">Accessory</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Operating System</label>
-                                    <select name="operatingSystem" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="">Select OS</option>
-                                        <option value="macOS">macOS</option>
-                                        <option value="Windows">Windows</option>
-                                        <option value="iOS">iOS</option>
-                                        <option value="iPadOS">iPadOS</option>
-                                        <option value="Android">Android</option>
-                                        <option value="Linux">Linux</option>
-                                        <option value="N/A">N/A</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Brand/Model</label>
-                                    <input type="text" name="brandModel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Dell Latitude 5520">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Serial Number</label>
-                                    <input type="text" name="serialNumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">MAC Address</label>
-                                    <input type="text" name="macAddress" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="00:00:00:00:00:00">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Barcode</label>
-                                    <input type="text" name="barcode" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Optional barcode number">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">QR Code</label>
-                                    <input type="text" name="qrCode" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Optional QR code data">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Location & Assignment -->
-                        <div>
-                            <h4 class="text-md font-medium text-gray-900 mb-4">Location &amp; Assignment</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                                    <input type="text" name="location" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Science Lab, Room 101, Library">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Assigned To</label>
-                                    <input type="text" name="assignedTo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Staff/Student Name">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Department/Year</label>
-                                    <input type="text" name="department" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Science, Mathematics, Year 7">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Loan End Date</label>
-                                    <input type="date" name="loanEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Purchase & Warranty -->
-                        <div>
-                            <h4 class="text-md font-medium text-gray-900 mb-4">Purchase &amp; Warranty</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
-                                    <input type="date" name="purchaseDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Cost ($)</label>
-                                    <input type="number" name="purchaseCost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="0.00" step="0.01">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Start</label>
-                                    <input type="date" name="warrantyStart" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Warranty End</label>
-                                    <input type="date" name="warrantyEnd" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Supplier</label>
-                                    <input type="text" name="supplier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Dell Direct">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ownership Type</label>
-                                    <select name="ownershipType" onchange="toggleLeaseFields()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="school-owned">School Owned</option>
-                                        <option value="lease">Lease</option>
-                                        <option value="lease-to-own">Lease to Own</option>
-                                    </select>
-                                </div>
-                                <div id="leaseExpiryField" class="hidden">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Lease Expiry Date</label>
-                                    <input type="date" name="leaseExpiryDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="active">Active</option>
-                                        <option value="maintenance">Under Maintenance</option>
-                                        <option value="damaged">Damaged</option>
-                                        <option value="decommissioned">Decommissioned</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notes -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                            <textarea name="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Additional notes or comments..."></textarea>
-                        </div>
-
-                        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                            <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                                Save Asset
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import Modal -->
-    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900">Import Assets</h3>
-                    <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-6">
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-4">Upload a CSV file to import multiple assets at once. The CSV should use the same column headers as the export function.</p>
-                        <div class="bg-gray-50 p-4 rounded-lg text-sm">
-                            <strong>Supported columns:</strong> Asset ID, Device Name, Device Type, Brand/Model, Serial Number, Location, Assigned To, Department, Ownership Type, Status, Warranty End, Lease Expiry Date, Purchase Date, Purchase Cost, Operating System, MAC Address, Barcode, QR Code, Supplier, Notes<br><br>
-                            <strong>Tips:</strong>
-                            <ul class="list-disc list-inside mt-2 space-y-1">
-                                <li>Export existing data first to see the correct format</li>
-                                <li>Asset ID is optional - system will auto-generate if blank</li>
-                                <li>Duplicate Asset IDs will be skipped</li>
-                                <li>Required fields will use defaults if missing</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                        <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                        <p class="text-lg font-medium text-gray-900 mb-2">Drop your CSV file here</p>
-                        <p class="text-sm text-gray-500 mb-4">or</p>
-                        <button onclick="document.getElementById('csvFileInput').click()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                            Choose File
-                        </button>
-                    </div>
-                    <div id="filePreview" class="mt-4 hidden">
-                        <h4 class="font-medium text-gray-900 mb-2">File Preview:</h4>
-                        <div class="bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
-                            <pre id="csvPreview" class="text-sm text-gray-700"></pre>
-                        </div>
-                        <div class="flex justify-end space-x-3 mt-4">
-                            <button onclick="closeImportModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
-                                Cancel
-                            </button>
-                            <button onclick="processImport()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                                Import Assets
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Export Modal -->
-    <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900">Export Assets</h3>
-                    <button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-6 space-y-6">
-                    <!-- Export Format -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Export Format</label>
-                        <div class="flex space-x-4">
-                            <label class="flex items-center">
-                                <input type="radio" name="exportFormat" value="csv" checked="" class="text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-sm text-gray-700">CSV</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="exportFormat" value="pdf" class="text-blue-600 focus:ring-blue-500">
-                                <span class="ml-2 text-sm text-gray-700">PDF</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Filter Options -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Filter Assets</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <select id="exportLocationFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"><option value="">All Locations</option><option value="Art Room">Art Room</option><option value="IT Department">IT Department</option><option value="Library">Library</option><option value="Room 101">Room 101</option><option value="Science Lab">Science Lab</option><option value="Staff Room">Staff Room</option></select>
-                            <select id="exportStatusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="">All Status</option>
-                                <option value="active">Active</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="damaged">Damaged</option>
-                                <option value="decommissioned">Decommissioned</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Column Selection -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Select Columns to Export</label>
-                        <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="id"> <span class="ml-2 text-sm">Asset ID</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="deviceName"> <span class="ml-2 text-sm">Device Name</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="deviceType"> <span class="ml-2 text-sm">Device Type</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="brandModel"> <span class="ml-2 text-sm">Brand/Model</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="serialNumber"> <span class="ml-2 text-sm">Serial Number</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="location"> <span class="ml-2 text-sm">Location</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="assignedTo"> <span class="ml-2 text-sm">Assigned To</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="department"> <span class="ml-2 text-sm">Department</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="ownershipType"> <span class="ml-2 text-sm">Ownership</span></label>
-                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="status"> <span class="ml-2 text-sm">Status</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="warrantyEnd"> <span class="ml-2 text-sm">Warranty End</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="leaseExpiryDate"> <span class="ml-2 text-sm">Lease Expiry</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="purchaseDate"> <span class="ml-2 text-sm">Purchase Date</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="purchaseCost"> <span class="ml-2 text-sm">Purchase Cost</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="operatingSystem"> <span class="ml-2 text-sm">Operating System</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="macAddress"> <span class="ml-2 text-sm">MAC Address</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="barcode"> <span class="ml-2 text-sm">Barcode</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="qrCode"> <span class="ml-2 text-sm">QR Code</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="supplier"> <span class="ml-2 text-sm">Supplier</span></label>
-                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="notes"> <span class="ml-2 text-sm">Notes</span></label>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                        <button onclick="closeExportModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
-                            Cancel
-                        </button>
-                        <button onclick="processExport()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                            Export Assets
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- QR Scanner Modal -->
-    <div id="qrScannerModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900">QR Code Scanner</h3>
-                    <button onclick="closeQRScanner()" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-6">
-                    <div id="qr-reader" class="w-full mb-4"></div>
-                    <div id="qr-reader-results" class="hidden">
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-600 mr-2"></i>
-                                <span class="font-medium text-green-800">QR Code Detected!</span>
-                            </div>
-                            <p class="text-sm text-green-700 mt-2">Scanned: <span id="qr-result-text" class="font-mono"></span></p>
-                        </div>
-                        <div class="flex space-x-3">
-                            <button onclick="searchScannedAsset()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                                <i class="fas fa-search mr-2"></i>Find Asset
-                            </button>
-                            <button onclick="addAssetWithQR()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                                <i class="fas fa-plus mr-2"></i>Add New Asset
-                            </button>
-                            <button onclick="restartQRScanner()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                                <i class="fas fa-redo mr-2"></i>Scan Again
-                            </button>
-                        </div>
-                    </div>
-                    <div class="text-sm text-gray-600 mt-4">
-                        <p><strong>Instructions:</strong></p>
-                        <ul class="list-disc list-inside mt-2 space-y-1">
-                            <li>Point your camera at a QR code</li>
-                            <li>Make sure the QR code is well-lit and in focus</li>
-                            <li>The scanner will automatically detect and read the code</li>
-                            <li>You can then search for existing assets or add new ones</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Asset Detail Modal -->
-    <div id="assetDetailModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900">Asset Details</h3>
-                    <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div class="p-6" id="assetDetailContent">
-                    <!-- Asset details will be populated here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-const supabaseUrl = 'https://zjjzumfocopbkjqfytkb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
-
-// Pull createClient off the global before shadowing the name
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-
-
-
-  // ─── Local cache ───────────────────────────────────────────────────────
-  let assets = [];
-
-  // ─── Fetch & render on load ───────────────────────────────────────────
-  async function fetchAssets() {
-    const { data, error } = await supabase
-      .from('active_assets')
-      .select('*')
-      .order('asset_id', { ascending: true });
-
-    if (error) {
-  console.error('Error fetching:', error.message, error.details);
-  return;
-}
-
-    assets = data;
-    populateLocationFilters();
-    applyFilters();
-    updateDashboard();
-  }
-  //fetchAssets();
-/*
-  // ─── Real-time sync ────────────────────────────────────────────────────
-  supabase
-    .channel('public:active_assets')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, () => {
-      fetchAssets();
-    })
-    .subscribe();
-    */
-
-  // ─── CRUD helpers ─────────────────────────────────────────────────────
-  async function addAsset(newAsset) {
-    const { error } = await supabase.from('active_assets').insert([newAsset]);
-    if (error) return alert('Add failed.');
-    fetchAssets();
-  }
-  async function editAsset(id, updates) {
-    const { error } = await supabase.from('active_assets').update(updates).eq('id', id);
-    if (error) return alert('Update failed.');
-    fetchAssets();
-  }
-  async function deleteAsset(id) {
-    const { error } = await supabase.from('active_assets').delete().eq('id', id);
-    if (error) return alert('Delete failed.');
-    fetchAssets();
-  }
-
-  // ─── Your existing UI functions go here:
-  // populateLocationFilters(), applyFilters(), updateDashboard(), etc.
-<script>
-  // ─── Supabase setup ────────────────────────────────────────────────────
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-  // ─── Local cache ───────────────────────────────────────────────────────
-  let assets = [];
-
-  // ─── Fetch & render on load ───────────────────────────────────────────
-  async function fetchAssets() {
-    const { data, error } = await supabase
-      .from('active_assets')
-      .select('*')
-      .order('asset_id', { ascending: true });
-    if (error) {
-      console.error('Error fetching:', error.message, error.details);
-      return;
+    // ─── UI helper functions ───────────────────────────────────────────────
+    function populateLocationFilters() {
+      // (if you had filters—no-op here)
     }
-    assets = data;
-    populateLocationFilters();
-    applyFilters();
-    updateDashboard();
-  }
-  // fetchAssets();  ← commented out
+    function applyFilters() {
+      // (if you had filters—no-op here)
+    }
+    function updateDashboard() {
+      const tbody = document.getElementById('assetTableBody');
+      tbody.innerHTML = '';
+      assets.forEach(a => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-gray-50 transition-colors';
+        tr.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap text-sm">${a.asset_id}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">${a.serial_number}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">${a.status || ''}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <button onclick="editAsset('${a.id}')" class="text-blue-600 hover:text-blue-900 mr-2">Edit</button>
+            <button onclick="deleteAsset('${a.id}')" class="text-red-600 hover:text-red-900">Delete</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function toggleEditMode() {
+      // example toggle, adjust per your original logic
+      const btn = document.getElementById('editModeToggle');
+      if (btn.innerText.includes('Enable')) {
+        btn.innerHTML = '<i class="fas fa-lock mr-2"></i>Disable Edit Mode';
+      } else {
+        btn.innerHTML = '<i class="fas fa-unlock mr-2"></i>Enable Edit Mode';
+      }
+    }
 
-  /*
-// ─── Real-time sync ────────────────────────────────────────────────────
-  supabase
-    .channel('public:active_assets')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, () => {
+    // ─── Data functions ───────────────────────────────────────────────────
+    let assets = [];
+    async function fetchAssets() {
+      const { data, error } = await supabase
+        .from('active_assets')
+        .select('*')
+        .order('asset_id', { ascending: true });
+      if (error) {
+        console.error('Error fetching:', error.message, error.details);
+        return;
+      }
+      assets = data;
+      populateLocationFilters();
+      applyFilters();
+      updateDashboard();
+    }
+
+    // ─── CRUD helpers ─────────────────────────────────────────────────────
+    async function addAsset(newAsset) {
+      const { error } = await supabase.from('active_assets').insert([newAsset]);
+      if (error) {
+        console.error('Add failed:', error.message);
+        return alert('Failed to add asset.');
+      }
       fetchAssets();
-    })
-    .subscribe();
-  */
+    }
+    async function editAsset(id) {
+      // For simplicity, we'll just prompt for status change
+      const newStatus = prompt('Enter new status:');
+      if (newStatus === null) return;
+      const { error } = await supabase
+        .from('active_assets')
+        .update({ status: newStatus })
+        .eq('id', id);
+      if (error) {
+        console.error('Update failed:', error.message);
+        return alert('Failed to update.');
+      }
+      fetchAssets();
+    }
+    async function deleteAsset(id) {
+      if (!confirm('Delete this asset?')) return;
+      const { error } = await supabase
+        .from('active_assets')
+        .delete()
+        .eq('id', id);
+      if (error) {
+        console.error('Delete failed:', error.message);
+        return alert('Failed to delete.');
+      }
+      fetchAssets();
+    }
 
-  // ─── CRUD helpers ─────────────────────────────────────────────────────
-  async function addAsset(newAsset) { /* … */ }
-  async function editAsset(id, updates) { /* … */ }
-  async function deleteAsset(id) { /* … */ }
-
-  // ─── UI helpers ────────────────────────────────────────────────────────
-  function populateLocationFilters() { /* … */ }
-  function applyFilters()           { /* … */ }
-  function updateDashboard()        { /* … */ }
-  function toggleEditMode()         { /* … */ }
-  // etc…
-
-</script>
-
-<!-- ─── Bootstrap: wait for DOM & helpers before doing anything ───────────────── -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetchAssets();
-    supabase
-      .channel('public:active_assets')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
-      .subscribe();
-  });
-</script>
-
-
-<!----comment node----><!--a=1--></body></html>
+    // ─── Bootstrap after DOM & helpers loaded ─────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchAssets();
+      // real-time (comment out if your host blocks websockets)
+      // supabase
+      //   .channel('public:active_assets')
+      //   .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
+      //   .subscribe();
+    });
+  </script>
+</body>
+</html>
