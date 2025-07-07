@@ -1,0 +1,3068 @@
+<html lang="en"><script async="" defer="" src="chrome-extension://pcblbflgdkdfdjpjifeppkljdnaekohj/GdocApi.0c843771.js" type="text/javascript"></script><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolTech Asset Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-backdrop { backdrop-filter: blur(4px); }
+        .status-active {
+            background-color: #dcfce7 !important;
+            color: #166534 !important;
+            border-color: #bbf7d0 !important;
+        }
+        .status-maintenance {
+            background-color: #fef3c7 !important;
+            color: #92400e !important;
+            border-color: #fde68a !important;
+        }
+        .status-damaged {
+            background-color: #fee2e2 !important;
+            color: #dc2626 !important;
+            border-color: #fecaca !important;
+        }
+        .status-decommissioned {
+            background-color: #f3f4f6 !important;
+            color: #6b7280 !important;
+            border-color: #d1d5db !important;
+        }
+        .lease-progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+        }
+        .lease-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.left-3{left:0.75rem}.top-1\/2{top:50%}.bottom-6{bottom:1.5rem}.right-6{right:1.5rem}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-4{margin-left:1rem}.mr-2{margin-right:0.5rem}.mr-3{margin-right:0.75rem}.mt-1{margin-top:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.ml-2{margin-left:0.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.ml-3{margin-left:0.75rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-16{height:4rem}.h-full{height:100%}.h-8{height:2rem}.max-h-40{max-height:10rem}.max-h-screen{max-height:100vh}.min-h-screen{min-height:100vh}.w-full{width:100%}.w-8{width:2rem}.min-w-full{min-width:100%}.min-w-0{min-width:0px}.max-w-7xl{max-width:80rem}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.list-inside{list-style-position:inside}.list-disc{list-style-type:disc}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-6{gap:1.5rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-gray-200 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(229 231 235 / var(--tw-divide-opacity, 1))}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-nowrap{white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.rounded{border-radius:0.25rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-blue-600{--tw-border-opacity:1;border-color:rgb(37 99 235 / var(--tw-border-opacity, 1))}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-gray-300{--tw-border-opacity:1;border-color:rgb(209 213 219 / var(--tw-border-opacity, 1))}.border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.border-green-200{--tw-border-opacity:1;border-color:rgb(187 247 208 / var(--tw-border-opacity, 1))}.border-blue-200{--tw-border-opacity:1;border-color:rgb(191 219 254 / var(--tw-border-opacity, 1))}.border-orange-200{--tw-border-opacity:1;border-color:rgb(254 215 170 / var(--tw-border-opacity, 1))}.border-purple-200{--tw-border-opacity:1;border-color:rgb(233 213 255 / var(--tw-border-opacity, 1))}.border-red-200{--tw-border-opacity:1;border-color:rgb(254 202 202 / var(--tw-border-opacity, 1))}.bg-blue-100{--tw-bg-opacity:1;background-color:rgb(219 234 254 / var(--tw-bg-opacity, 1))}.bg-blue-50{--tw-bg-opacity:1;background-color:rgb(239 246 255 / var(--tw-bg-opacity, 1))}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231 / var(--tw-bg-opacity, 1))}.bg-green-600{--tw-bg-opacity:1;background-color:rgb(22 163 74 / var(--tw-bg-opacity, 1))}.bg-indigo-100{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.bg-orange-100{--tw-bg-opacity:1;background-color:rgb(255 237 213 / var(--tw-bg-opacity, 1))}.bg-orange-200{--tw-bg-opacity:1;background-color:rgb(254 215 170 / var(--tw-bg-opacity, 1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226 / var(--tw-bg-opacity, 1))}.bg-red-200{--tw-bg-opacity:1;background-color:rgb(254 202 202 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195 / var(--tw-bg-opacity, 1))}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-gray-600{--tw-bg-opacity:1;background-color:rgb(75 85 99 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.bg-orange-600{--tw-bg-opacity:1;background-color:rgb(234 88 12 / var(--tw-bg-opacity, 1))}.bg-purple-600{--tw-bg-opacity:1;background-color:rgb(147 51 234 / var(--tw-bg-opacity, 1))}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-purple-100{--tw-bg-opacity:1;background-color:rgb(243 232 255 / var(--tw-bg-opacity, 1))}.bg-opacity-50{--tw-bg-opacity:0.5}.bg-opacity-95{--tw-bg-opacity:0.95}.p-3{padding:0.75rem}.p-6{padding:1.5rem}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-8{padding:2rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.pl-10{padding-left:2.5rem}.pr-4{padding-right:1rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-wider{letter-spacing:0.05em}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-900{--tw-text-opacity:1;color:rgb(17 24 39 / var(--tw-text-opacity, 1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74 / var(--tw-text-opacity, 1))}.text-indigo-600{--tw-text-opacity:1;color:rgb(79 70 229 / var(--tw-text-opacity, 1))}.text-orange-600{--tw-text-opacity:1;color:rgb(234 88 12 / var(--tw-text-opacity, 1))}.text-orange-700{--tw-text-opacity:1;color:rgb(194 65 12 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4 / var(--tw-text-opacity, 1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52 / var(--tw-text-opacity, 1))}.text-blue-800{--tw-text-opacity:1;color:rgb(30 64 175 / var(--tw-text-opacity, 1))}.text-orange-800{--tw-text-opacity:1;color:rgb(154 52 18 / var(--tw-text-opacity, 1))}.text-purple-800{--tw-text-opacity:1;color:rgb(107 33 168 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-purple-600{--tw-text-opacity:1;color:rgb(147 51 234 / var(--tw-text-opacity, 1))}.text-red-800{--tw-text-opacity:1;color:rgb(153 27 27 / var(--tw-text-opacity, 1))}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:bg-blue-700:hover{--tw-bg-opacity:1;background-color:rgb(29 78 216 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-50:hover{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.hover\:bg-green-700:hover{--tw-bg-opacity:1;background-color:rgb(21 128 61 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-700:hover{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-900:hover{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.hover\:bg-orange-700:hover{--tw-bg-opacity:1;background-color:rgb(194 65 12 / var(--tw-bg-opacity, 1))}.hover\:bg-purple-700:hover{--tw-bg-opacity:1;background-color:rgb(126 34 206 / var(--tw-bg-opacity, 1))}.hover\:bg-red-700:hover{--tw-bg-opacity:1;background-color:rgb(185 28 28 / var(--tw-bg-opacity, 1))}.hover\:text-gray-700:hover{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.hover\:text-gray-600:hover{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.hover\:text-blue-900:hover{--tw-text-opacity:1;color:rgb(30 58 138 / var(--tw-text-opacity, 1))}.hover\:text-green-900:hover{--tw-text-opacity:1;color:rgb(20 83 45 / var(--tw-text-opacity, 1))}.hover\:text-red-900:hover{--tw-text-opacity:1;color:rgb(127 29 29 / var(--tw-text-opacity, 1))}.hover\:text-purple-900:hover{--tw-text-opacity:1;color:rgb(88 28 135 / var(--tw-text-opacity, 1))}.focus\:border-transparent:focus{border-color:transparent}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-blue-500:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(59 130 246 / var(--tw-ring-opacity, 1))}@media (min-width: 640px){.sm\:ml-4{margin-left:1rem}.sm\:inline{display:inline}.sm\:hidden{display:none}.sm\:h-10{height:2.5rem}.sm\:w-64{width:16rem}.sm\:w-10{width:2.5rem}.sm\:flex-row{flex-direction:row}.sm\:space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.sm\:space-y-0 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0px * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0px * var(--tw-space-y-reverse))}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}}@media (min-width: 768px){.md\:table-cell{display:table-cell}.md\:hidden{display:none}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}@media (min-width: 1024px){.lg\:table-cell{display:table-cell}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:flex-row{flex-direction:row}.lg\:items-center{align-items:center}.lg\:justify-between{justify-content:space-between}.lg\:space-y-0 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0px * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0px * var(--tw-space-y-reverse))}.lg\:px-8{padding-left:2rem;padding-right:2rem}}@media (min-width: 1280px){.xl\:table-cell{display:table-cell}}</style><style>
+.--brisk-axd {
+  filter: blur(4px);
+  user-select: none;
+}
+</style></head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-laptop text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-semibold text-gray-900">SchoolTech Asset Manager</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Add Asset
+                    </button>
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-qrcode mr-2"></i>Scan QR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Stats -->
+        <div class="space-y-6 mb-8">
+            <!-- Top Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100">
+                            <i class="fas fa-laptop text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Assets</p>
+                            <p class="text-2xl font-semibold text-gray-900">6</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Active</p>
+                            <p class="text-2xl font-semibold text-gray-900">6</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-yellow-100">
+                            <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Needs Attention</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="needsAttentionCount">0</p>
+                            <div class="text-xs text-gray-500 mt-1">Maintenance + Damaged</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-indigo-100">
+                            <i class="fas fa-building text-indigo-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Ownership</p>
+                            <div class="text-xs text-gray-500 space-y-1 mt-1">
+                                <div>School: <span id="schoolOwnedCount" class="font-medium">4</span></div>
+                                <div>Lease: <span id="leaseCount" class="font-medium">1</span></div>
+                                <div>Lease-to-Own: <span id="leaseToOwnCount" class="font-medium">1</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-orange-100">
+                            <i class="fas fa-handshake text-orange-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Leases Expiring</p>
+                            <p class="text-xs text-gray-500 mb-1">(within 3 months)</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="leasesExpiringCount">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-orange-200">
+                            <i class="fas fa-ban text-orange-700 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Leases Expired</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="leasesExpiredCount">2</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100">
+                            <i class="fas fa-calendar-times text-red-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Warranty Expiring</p>
+                            <p class="text-xs text-gray-500 mb-1">(within 1 month)</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="warrantyExpiringCount">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-200">
+                            <i class="fas fa-exclamation-circle text-red-700 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Warranty Expired</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="warrantyExpiredCount">6</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Toggle Tabs -->
+        <div class="bg-white rounded-xl shadow-sm mb-6 border border-gray-100">
+            <div class="flex border-b border-gray-200">
+                <button id="activeTab" onclick="switchView('active')" class="px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50">
+                    <i class="fas fa-laptop mr-2"></i>Active Assets
+                </button>
+                <button id="archivedTab" onclick="switchView('archived')" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-archive mr-2"></i>Archived Assets
+                </button>
+                <button id="leaseBundlesTab" onclick="switchView('leaseBundles')" class="px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-handshake mr-2"></i>Lease Bundles
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input id="searchInput" type="text" placeholder="Search assets..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64" onkeyup="applyFilters()">
+                    </div>
+                    <select id="locationFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()"><option value="">All Locations</option><option value="Art Room">Art Room</option><option value="IT Department">IT Department</option><option value="Library">Library</option><option value="Room 101">Room 101</option><option value="Science Lab">Science Lab</option><option value="Staff Room">Staff Room</option></select>
+                    <select id="typeFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()">
+                        <option value="">All Types</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="iPad">iPad</option>
+                        <option value="iPhone">iPhone</option>
+                        <option value="Monitor">Monitor</option>
+                        <option value="Dock">Dock/Hub</option>
+                        <option value="Apple Pencil">Apple Pencil</option>
+                        <option value="Projector">Projector</option>
+                        <option value="Printer">Printer</option>
+                        <option value="Accessory">Accessory</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="maintenance">Maintenance</option>
+                        <option value="damaged">Damaged</option>
+                        <option value="decommissioned">Decommissioned</option>
+                    </select>
+                    <select id="ownershipFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="applyFilters()">
+                        <option value="">All Ownership</option>
+                        <option value="school-owned">School Owned</option>
+                        <option value="lease">Lease</option>
+                        <option value="lease-to-own">Lease to Own</option>
+                    </select>
+                </div>
+                <div class="flex space-x-2">
+                    <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
+                        <i class="fas fa-trash mr-2"></i>Delete Selected
+                    </button>
+                    <button id="bulkArchiveBtn" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
+                        <i class="fas fa-archive mr-2"></i>Archive Selected
+                    </button>
+                    <button id="bulkRestoreBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
+                        <i class="fas fa-undo mr-2"></i>Restore Selected
+                    </button>
+                    <button id="bulkExportBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors hidden">
+                        <i class="fas fa-file-export mr-2"></i>Export Selected
+                    </button>
+                    <button onclick="openExportModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                    <button onclick="openImportModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-upload mr-2"></i>Import
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-900">Asset Inventory</h2>
+                <button id="editModeToggle" onclick="toggleEditMode()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-unlock mr-2"></i>Enable Edit Mode
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr id="assetTableHeaders" class="">
+                            <th id="selectAllHeader" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden">
+                                <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Location</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Assigned To</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Ownership</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Warranty/Lease</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                        <tr id="leaseBundleTableHeaders" class="hidden">
+                            <th id="selectAllHeaderLease" class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden">
+                                <input type="checkbox" id="selectAllLease" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            </th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lease Agreement</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Lease Provider</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Monthly Payment</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Total Value</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">Duration</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Lease Progress</th>
+                            <th class="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="assetTableBody"><tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="SCH-000001" onchange="toggleAssetSelection('SCH-000001')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-laptop text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">Staff Laptop 01</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">SCH-000001 • Dell Latitude 5520</div>
+                                <div class="text-xs text-gray-500 md:hidden">Staff Room • Sarah Johnson</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">Staff Room</div>
+                        <div class="text-sm text-gray-500">English</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">Sarah Johnson</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border-blue-200">
+                            School Owned
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-active">
+                            <span class="hidden sm:inline">Active</span>
+                            <span class="sm:hidden">A</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">15/12/2024</div>
+                        <div class="text-sm text-red-500">Warranty: Expired</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('SCH-000001')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('SCH-000001')" class="text-blue-600 hover:text-blue-900 hidden" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('SCH-000001')" class="text-red-600 hover:text-red-900 hidden" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr><tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="SCH-000002" onchange="toggleAssetSelection('SCH-000002')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-tablet-alt text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">Student iPad 02</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">SCH-000002 • iPad Air 5th Gen</div>
+                                <div class="text-xs text-gray-500 md:hidden">Science Lab • Year 8 Class</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">Science Lab</div>
+                        <div class="text-sm text-gray-500">Science</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">Year 8 Class</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border-orange-200">
+                            Lease
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-active">
+                            <span class="hidden sm:inline">Active</span>
+                            <span class="sm:hidden">A</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">15/02/2025</div>
+                        <div class="text-sm text-red-500">Lease Expiry: Expired</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('SCH-000002')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('SCH-000002')" class="text-blue-600 hover:text-blue-900 hidden" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('SCH-000002')" class="text-red-600 hover:text-red-900 hidden" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr><tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="SCH-000003" onchange="toggleAssetSelection('SCH-000003')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-tv text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">Interactive Monitor</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">SCH-000003 • Samsung Interactive Display 75"</div>
+                                <div class="text-xs text-gray-500 md:hidden">Room 101 • Mathematics Dept</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">Room 101</div>
+                        <div class="text-sm text-gray-500">Mathematics</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">Mathematics Dept</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border-purple-200">
+                            Lease to Own
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-active">
+                            <span class="hidden sm:inline">Active</span>
+                            <span class="sm:hidden">A</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">20/01/2025</div>
+                        <div class="text-sm text-red-500">Lease Expiry: Expired</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('SCH-000003')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('SCH-000003')" class="text-blue-600 hover:text-blue-900 hidden" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('SCH-000003')" class="text-red-600 hover:text-red-900 hidden" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr><tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="SCH-000004" onchange="toggleAssetSelection('SCH-000004')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-mobile-alt text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">Staff iPhone 04</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">SCH-000004 • iPhone 14 Pro</div>
+                                <div class="text-xs text-gray-500 md:hidden">IT Department • David Wilson</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">IT Department</div>
+                        <div class="text-sm text-gray-500">IT</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">David Wilson</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border-blue-200">
+                            School Owned
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-active">
+                            <span class="hidden sm:inline">Active</span>
+                            <span class="sm:hidden">A</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">30/01/2025</div>
+                        <div class="text-sm text-red-500">Warranty: Expired</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('SCH-000004')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('SCH-000004')" class="text-blue-600 hover:text-blue-900 hidden" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('SCH-000004')" class="text-red-600 hover:text-red-900 hidden" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr><tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="SCH-000005" onchange="toggleAssetSelection('SCH-000005')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-plug text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">USB-C Hub 05</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">SCH-000005 • CalDigit TS3 Plus</div>
+                                <div class="text-xs text-gray-500 md:hidden">Library • Michael Chen</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">Library</div>
+                        <div class="text-sm text-gray-500">Science</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">Michael Chen</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border-blue-200">
+                            School Owned
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-active">
+                            <span class="hidden sm:inline">Active</span>
+                            <span class="sm:hidden">A</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">15/08/2024</div>
+                        <div class="text-sm text-red-500">Warranty: Expired</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('SCH-000005')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('SCH-000005')" class="text-blue-600 hover:text-blue-900 hidden" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('SCH-000005')" class="text-red-600 hover:text-red-900 hidden" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr><tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="SCH-000006" onchange="toggleAssetSelection('SCH-000006')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-pen text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">Apple Pencil 06</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">SCH-000006 • Apple Pencil 2nd Gen</div>
+                                <div class="text-xs text-gray-500 md:hidden">Art Room • Emma Thompson</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">Art Room</div>
+                        <div class="text-sm text-gray-500">Art</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">Emma Thompson</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border-blue-200">
+                            School Owned
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-active">
+                            <span class="hidden sm:inline">Active</span>
+                            <span class="sm:hidden">A</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">20/11/2024</div>
+                        <div class="text-sm text-red-500">Warranty: Expired</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('SCH-000006')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('SCH-000006')" class="text-blue-600 hover:text-blue-900 hidden" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('SCH-000006')" class="text-red-600 hover:text-red-900 hidden" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Code Button -->
+    <div class="fixed bottom-6 right-6">
+        <button onclick="openCodeViewer()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-lg">
+            <i class="fas fa-code mr-2"></i>View Code
+        </button>
+    </div>
+
+    <!-- Code Viewer Modal -->
+    <div id="codeViewerModal" class="fixed inset-0 bg-black bg-opacity-95 hidden z-50">
+        <div class="flex flex-col h-full">
+            <!-- Header -->
+            <div class="bg-gray-900 px-6 py-4 flex justify-between items-center border-b border-gray-700">
+                <h3 class="text-lg font-semibold text-white">SchoolTech Asset Manager - Source Code</h3>
+                <div class="flex space-x-3">
+                    <button onclick="copyCodeToClipboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-copy mr-2"></i>Copy Code
+                    </button>
+                    <button onclick="closeCodeViewer()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-times mr-2"></i>Close View
+                    </button>
+                </div>
+            </div>
+            <!-- Code Content -->
+            <div class="flex-1 overflow-auto bg-gray-900">
+                <pre id="codeContent" class="text-sm text-gray-300 p-6 font-mono leading-relaxed whitespace-pre-wrap"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Asset Modal -->
+    <div id="assetModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Add New Asset</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="assetForm" class="space-y-6">
+                        <!-- Basic Information -->
+                        <div>
+                            <h4 class="text-md font-medium text-gray-900 mb-4">Basic Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Asset ID</label>
+                                    <div class="flex space-x-2">
+                                        <input type="text" name="assetId" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Auto-generated" required="">
+                                        <button type="button" onclick="generateNewAssetId()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors" title="Generate New ID">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Auto-generated but editable if needed</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Device Name</label>
+                                    <input type="text" name="deviceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Staff Laptop 01">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Device Type</label>
+                                    <select name="deviceType" onchange="updateOperatingSystemOptions()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Type</option>
+                                        <option value="laptop">Laptop</option>
+                                        <option value="desktop">Desktop</option>
+                                        <option value="ipad">iPad</option>
+                                        <option value="iphone">iPhone</option>
+                                        <option value="monitor">Monitor</option>
+                                        <option value="dock">Dock/Hub</option>
+                                        <option value="apple-pencil">Apple Pencil</option>
+                                        <option value="projector">Projector</option>
+                                        <option value="printer">Printer</option>
+                                        <option value="switch">Network Switch</option>
+                                        <option value="router">Router</option>
+                                        <option value="charger">Charger</option>
+                                        <option value="accessory">Accessory</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Operating System</label>
+                                    <select name="operatingSystem" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select OS</option>
+                                        <option value="macOS">macOS</option>
+                                        <option value="Windows">Windows</option>
+                                        <option value="iOS">iOS</option>
+                                        <option value="iPadOS">iPadOS</option>
+                                        <option value="Android">Android</option>
+                                        <option value="Linux">Linux</option>
+                                        <option value="N/A">N/A</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Brand/Model</label>
+                                    <input type="text" name="brandModel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Dell Latitude 5520">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Serial Number</label>
+                                    <input type="text" name="serialNumber" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">MAC Address</label>
+                                    <input type="text" name="macAddress" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="00:00:00:00:00:00">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Barcode</label>
+                                    <input type="text" name="barcode" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Optional barcode number">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">QR Code</label>
+                                    <input type="text" name="qrCode" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Optional QR code data">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location & Assignment -->
+                        <div>
+                            <h4 class="text-md font-medium text-gray-900 mb-4">Location &amp; Assignment</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                    <input type="text" name="location" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Science Lab, Room 101, Library">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Assigned To</label>
+                                    <input type="text" name="assignedTo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Staff/Student Name">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Department/Year</label>
+                                    <input type="text" name="department" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Science, Mathematics, Year 7">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Loan End Date</label>
+                                    <input type="date" name="loanEndDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Purchase & Warranty -->
+                        <div>
+                            <h4 class="text-md font-medium text-gray-900 mb-4">Purchase &amp; Warranty</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Date</label>
+                                    <input type="date" name="purchaseDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Purchase Cost ($)</label>
+                                    <input type="number" name="purchaseCost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="0.00" step="0.01">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Warranty Start</label>
+                                    <input type="date" name="warrantyStart" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Warranty End</label>
+                                    <input type="date" name="warrantyEnd" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Supplier</label>
+                                    <input type="text" name="supplier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g., Dell Direct">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Ownership Type</label>
+                                    <select name="ownershipType" onchange="toggleLeaseFields()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="school-owned">School Owned</option>
+                                        <option value="lease">Lease</option>
+                                        <option value="lease-to-own">Lease to Own</option>
+                                    </select>
+                                </div>
+                                <div id="leaseExpiryField" class="hidden">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Lease Expiry Date</label>
+                                    <input type="date" name="leaseExpiryDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="active">Active</option>
+                                        <option value="maintenance">Under Maintenance</option>
+                                        <option value="damaged">Damaged</option>
+                                        <option value="decommissioned">Decommissioned</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                            <textarea name="notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Additional notes or comments..."></textarea>
+                        </div>
+
+                        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                            <button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                                Save Asset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Import Assets</h3>
+                    <button onclick="closeImportModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-4">Upload a CSV file to import multiple assets at once. The CSV should use the same column headers as the export function.</p>
+                        <div class="bg-gray-50 p-4 rounded-lg text-sm">
+                            <strong>Supported columns:</strong> Asset ID, Device Name, Device Type, Brand/Model, Serial Number, Location, Assigned To, Department, Ownership Type, Status, Warranty End, Lease Expiry Date, Purchase Date, Purchase Cost, Operating System, MAC Address, Barcode, QR Code, Supplier, Notes<br><br>
+                            <strong>Tips:</strong>
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li>Export existing data first to see the correct format</li>
+                                <li>Asset ID is optional - system will auto-generate if blank</li>
+                                <li>Duplicate Asset IDs will be skipped</li>
+                                <li>Required fields will use defaults if missing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-lg font-medium text-gray-900 mb-2">Drop your CSV file here</p>
+                        <p class="text-sm text-gray-500 mb-4">or</p>
+                        <button onclick="document.getElementById('csvFileInput').click()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Choose File
+                        </button>
+                    </div>
+                    <div id="filePreview" class="mt-4 hidden">
+                        <h4 class="font-medium text-gray-900 mb-2">File Preview:</h4>
+                        <div class="bg-gray-50 p-4 rounded-lg max-h-40 overflow-y-auto">
+                            <pre id="csvPreview" class="text-sm text-gray-700"></pre>
+                        </div>
+                        <div class="flex justify-end space-x-3 mt-4">
+                            <button onclick="closeImportModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
+                                Cancel
+                            </button>
+                            <button onclick="processImport()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                                Import Assets
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Export Assets</h3>
+                    <button onclick="closeExportModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                    <!-- Export Format -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Export Format</label>
+                        <div class="flex space-x-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="exportFormat" value="csv" checked="" class="text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">CSV</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="exportFormat" value="pdf" class="text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">PDF</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filter Options -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Filter Assets</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <select id="exportLocationFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"><option value="">All Locations</option><option value="Art Room">Art Room</option><option value="IT Department">IT Department</option><option value="Library">Library</option><option value="Room 101">Room 101</option><option value="Science Lab">Science Lab</option><option value="Staff Room">Staff Room</option></select>
+                            <select id="exportStatusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="damaged">Damaged</option>
+                                <option value="decommissioned">Decommissioned</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Column Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Select Columns to Export</label>
+                        <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="id"> <span class="ml-2 text-sm">Asset ID</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="deviceName"> <span class="ml-2 text-sm">Device Name</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="deviceType"> <span class="ml-2 text-sm">Device Type</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="brandModel"> <span class="ml-2 text-sm">Brand/Model</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="serialNumber"> <span class="ml-2 text-sm">Serial Number</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="location"> <span class="ml-2 text-sm">Location</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="assignedTo"> <span class="ml-2 text-sm">Assigned To</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="department"> <span class="ml-2 text-sm">Department</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="ownershipType"> <span class="ml-2 text-sm">Ownership</span></label>
+                            <label class="flex items-center"><input type="checkbox" checked="" class="export-column" data-column="status"> <span class="ml-2 text-sm">Status</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="warrantyEnd"> <span class="ml-2 text-sm">Warranty End</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="leaseExpiryDate"> <span class="ml-2 text-sm">Lease Expiry</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="purchaseDate"> <span class="ml-2 text-sm">Purchase Date</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="purchaseCost"> <span class="ml-2 text-sm">Purchase Cost</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="operatingSystem"> <span class="ml-2 text-sm">Operating System</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="macAddress"> <span class="ml-2 text-sm">MAC Address</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="barcode"> <span class="ml-2 text-sm">Barcode</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="qrCode"> <span class="ml-2 text-sm">QR Code</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="supplier"> <span class="ml-2 text-sm">Supplier</span></label>
+                            <label class="flex items-center"><input type="checkbox" class="export-column" data-column="notes"> <span class="ml-2 text-sm">Notes</span></label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                        <button onclick="closeExportModal()" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <button onclick="processExport()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                            Export Assets
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div id="qrScannerModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">QR Code Scanner</h3>
+                    <button onclick="closeQRScanner()" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div id="qr-reader" class="w-full mb-4"></div>
+                    <div id="qr-reader-results" class="hidden">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                <span class="font-medium text-green-800">QR Code Detected!</span>
+                            </div>
+                            <p class="text-sm text-green-700 mt-2">Scanned: <span id="qr-result-text" class="font-mono"></span></p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="searchScannedAsset()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-search mr-2"></i>Find Asset
+                            </button>
+                            <button onclick="addAssetWithQR()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add New Asset
+                            </button>
+                            <button onclick="restartQRScanner()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-redo mr-2"></i>Scan Again
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-4">
+                        <p><strong>Instructions:</strong></p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>Point your camera at a QR code</li>
+                            <li>Make sure the QR code is well-lit and in focus</li>
+                            <li>The scanner will automatically detect and read the code</li>
+                            <li>You can then search for existing assets or add new ones</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asset Detail Modal -->
+    <div id="assetDetailModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Asset Details</h3>
+                    <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6" id="assetDetailContent">
+                    <!-- Asset details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase setup
+        const supabaseUrl = 'https://zjjzumfocopbkjqfytkb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqanpXdWZvcGJrajFmeXRrYiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzUxODcxMDA0LCJleHAiOjIwNjc0NDcwMDR9.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let assets = [];
+
+        (async function fetchAssets() {
+            const { data, error } = await supabase
+                .from('active_assets')
+                .select('*')
+                .order('asset_id', { ascending: true });
+
+            if (error) {
+                console.error('Error fetching:', error);
+                return;
+            }
+            assets = data;
+            populateLocationFilters();
+            applyFilters();
+            updateDashboard();
+        })();
+        
+
+        let selectedAssets = new Set();
+        let editModeEnabled = false;
+        let currentView = 'active'; // 'active' or 'archived'
+        let filteredAssets = [];
+
+        // Populate location dropdowns with unique locations from assets
+        function populateLocationFilters() {
+            // Get unique locations from all assets (both active and archived)
+            const uniqueLocations = [...new Set(assets.map(asset => asset.location))].filter(location => location && location.trim()).sort();
+
+            // Update main location filter
+            const locationFilter = document.getElementById('locationFilter');
+            const currentValue = locationFilter.value;
+            locationFilter.innerHTML = '<option value="">All Locations</option>';
+            uniqueLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                locationFilter.appendChild(option);
+            });
+            locationFilter.value = currentValue; // Restore selected value
+
+            // Update export location filter
+            const exportLocationFilter = document.getElementById('exportLocationFilter');
+            const currentExportValue = exportLocationFilter.value;
+            exportLocationFilter.innerHTML = '<option value="">All Locations</option>';
+            uniqueLocations.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location;
+                option.textContent = location;
+                exportLocationFilter.appendChild(option);
+            });
+            exportLocationFilter.value = currentExportValue; // Restore selected value
+        }
+
+        // Apply filters and render assets
+        function applyFilters() {
+            // Skip filtering if we're in lease bundles view
+            if (currentView === 'leaseBundles') {
+                return;
+            }
+
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const locationFilter = document.getElementById('locationFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const ownershipFilter = document.getElementById('ownershipFilter').value;
+
+            // Filter based on current view (active/archived)
+            let baseAssets = assets.filter(asset =>
+                currentView === 'active' ? !asset.archived : asset.archived
+            );
+
+            // Apply search and filters
+            filteredAssets = baseAssets.filter(asset => {
+                const matchesSearch = !searchTerm ||
+                    asset.deviceName.toLowerCase().includes(searchTerm) ||
+                    asset.id.toLowerCase().includes(searchTerm) ||
+                    asset.brandModel.toLowerCase().includes(searchTerm) ||
+                    asset.assignedTo.toLowerCase().includes(searchTerm);
+
+                const matchesLocation = !locationFilter || asset.location === locationFilter;
+                const matchesType = !typeFilter || asset.deviceType === typeFilter;
+                const matchesStatus = !statusFilter || asset.status === statusFilter;
+                const matchesOwnership = !ownershipFilter || asset.ownershipType === ownershipFilter;
+
+                return matchesSearch && matchesLocation && matchesType && matchesStatus && matchesOwnership;
+            });
+
+            renderAssets();
+        }
+
+        // Render assets table
+        function renderAssets() {
+            const tbody = document.getElementById('assetTableBody');
+            tbody.innerHTML = '';
+
+            filteredAssets.forEach(asset => {
+                const warrantyStatus = new Date(asset.warrantyEnd) < new Date() ? 'Expired' :
+                                    new Date(asset.warrantyEnd) < new Date(Date.now() + 30*24*60*60*1000) ? 'Expiring Soon' : 'Valid';
+
+                // Check lease expiry for lease items
+                let leaseStatus = '';
+                let displayDate = new Date(asset.warrantyEnd).toLocaleDateString();
+                let displayLabel = 'Warranty';
+
+                if (asset.ownershipType === 'lease' || asset.ownershipType === 'lease-to-own') {
+                    if (asset.leaseExpiryDate) {
+                        const leaseExpiry = new Date(asset.leaseExpiryDate);
+                        const threeMonthsFromNow = new Date();
+                        threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+
+                        leaseStatus = leaseExpiry < new Date() ? 'Expired' :
+                                     leaseExpiry < threeMonthsFromNow ? 'Expiring Soon' : 'Valid';
+                        displayDate = leaseExpiry.toLocaleDateString();
+                        displayLabel = 'Lease Expiry';
+                    }
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap ${editModeEnabled ? '' : 'hidden'}">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="${asset.id}" onchange="toggleAssetSelection('${asset.id}')">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <i class="fas fa-${getDeviceIcon(asset.deviceType)} text-blue-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">${asset.deviceName}</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">${asset.id} • ${asset.brandModel}</div>
+                                <div class="text-xs text-gray-500 md:hidden">${asset.location} • ${asset.assignedTo}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">${asset.location}</div>
+                        <div class="text-sm text-gray-500">${asset.department}</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">${asset.assignedTo}</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOwnershipColor(asset.ownershipType)}">
+                            ${formatOwnership(asset.ownershipType)}
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border status-${asset.status}">
+                            <span class="hidden sm:inline">${asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}</span>
+                            <span class="sm:hidden">${asset.status.charAt(0).toUpperCase()}</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">${displayDate}</div>
+                        <div class="text-sm ${(leaseStatus || warrantyStatus) === 'Expired' ? 'text-red-500' : (leaseStatus || warrantyStatus) === 'Expiring Soon' ? 'text-yellow-500' : 'text-green-500'}">${displayLabel}: ${leaseStatus || warrantyStatus}</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewAsset('${asset.id}')" class="text-green-600 hover:text-green-900" title="View Details">
+                                <i class="fas fa-eye text-sm"></i>
+                            </button>
+                            <button onclick="editAsset('${asset.id}')" class="text-blue-600 hover:text-blue-900 ${editModeEnabled ? '' : 'hidden'}" title="Edit Asset">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deleteAsset('${asset.id}')" class="text-red-600 hover:text-red-900 ${editModeEnabled ? '' : 'hidden'}" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getDeviceIcon(deviceType) {
+            const icons = {
+                'Laptop': 'laptop',
+                'Desktop': 'desktop',
+                'iPad': 'tablet-alt',
+                'iPhone': 'mobile-alt',
+                'Monitor': 'tv',
+                'Dock': 'plug',
+                'Apple Pencil': 'pen',
+                'Projector': 'video',
+                'Printer': 'print',
+                'Accessory': 'puzzle-piece',
+                'Other': 'question-circle'
+            };
+            return icons[deviceType] || 'laptop';
+        }
+
+        function getOwnershipColor(ownershipType) {
+            const colors = {
+                'school-owned': 'bg-blue-100 text-blue-800 border-blue-200',
+                'lease': 'bg-orange-100 text-orange-800 border-orange-200',
+                'lease-to-own': 'bg-purple-100 text-purple-800 border-purple-200'
+            };
+            return colors[ownershipType] || 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+
+        function formatOwnership(ownershipType) {
+            const formats = {
+                'school-owned': 'School Owned',
+                'lease': 'Lease',
+                'lease-to-own': 'Lease to Own'
+            };
+            return formats[ownershipType] || ownershipType;
+        }
+
+        // Modal functions
+        function generateAssetId() {
+            // Get the highest existing asset number
+            const existingIds = assets.map(asset => asset.id);
+            const schoolIds = existingIds.filter(id => id.startsWith('SCH-'));
+
+            let highestNumber = 0;
+            schoolIds.forEach(id => {
+                const match = id.match(/SCH-(\d+)$/);
+                if (match) {
+                    const num = parseInt(match[1]);
+                    if (num > highestNumber) {
+                        highestNumber = num;
+                    }
+                }
+            });
+
+            // Generate next sequential ID
+            const nextNumber = (highestNumber + 1).toString().padStart(6, '0');
+            return `SCH-${nextNumber}`;
+        }
+
+        function generateNewAssetId() {
+            const assetIdInput = document.querySelector('input[name="assetId"]');
+            assetIdInput.value = generateAssetId();
+        }
+
+        function openModal(title = 'Add New Asset') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('assetModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Auto-generate asset ID for new assets but keep it editable
+            if (title === 'Add New Asset') {
+                const suggestedId = generateAssetId();
+                document.querySelector('input[name="assetId"]').value = suggestedId;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('assetModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            const form = document.getElementById('assetForm');
+            form.reset();
+            // Clear the original ID tracking
+            delete form.dataset.originalId;
+            // Hide lease fields
+            document.getElementById('leaseExpiryField').classList.add('hidden');
+            // Reset submit button
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Save Asset';
+        }
+
+        function editAsset(assetId) {
+            if (!editModeEnabled) {
+                alert('Please enable edit mode to edit assets.');
+                return;
+            }
+            const asset = assets.find(a => a.id === assetId);
+            if (asset) {
+                openModal('Edit Asset');
+                // Store original asset ID for duplicate checking
+                const form = document.getElementById('assetForm');
+                form.dataset.originalId = asset.id;
+
+                // Populate form with asset data
+                Object.keys(asset).forEach(key => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.value = asset[key];
+                    }
+                });
+
+                // Handle lease fields visibility
+                toggleLeaseFields();
+            }
+        }
+
+        function viewAsset(assetId) {
+            const asset = assets.find(a => a.id === assetId);
+            if (asset) {
+                showAssetDetail(asset);
+            }
+        }
+
+        function showAssetDetail(asset) {
+            const content = document.getElementById('assetDetailContent');
+            const warrantyStatus = new Date(asset.warrantyEnd) < new Date() ? 'Expired' :
+                                new Date(asset.warrantyEnd) < new Date(Date.now() + 30*24*60*60*1000) ? 'Expiring Soon' : 'Valid';
+
+            let leaseInfo = '';
+            if (asset.ownershipType === 'lease' || asset.ownershipType === 'lease-to-own') {
+                if (asset.leaseExpiryDate) {
+                    const leaseExpiry = new Date(asset.leaseExpiryDate);
+                    const threeMonthsFromNow = new Date();
+                    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+
+                    const leaseStatus = leaseExpiry < new Date() ? 'Expired' :
+                                     leaseExpiry < threeMonthsFromNow ? 'Expiring Soon' : 'Valid';
+                    leaseInfo = `
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Lease Expiry:</span>
+                            <span class="text-gray-900">${leaseExpiry.toLocaleDateString()} <span class="text-sm ${leaseStatus === 'Expired' ? 'text-red-500' : leaseStatus === 'Expiring Soon' ? 'text-yellow-500' : 'text-green-500'}">(${leaseStatus})</span></span>
+                        </div>
+                    `;
+                }
+            }
+
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center mb-6">
+                        <div class="h-16 w-16 rounded-lg bg-blue-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-${getDeviceIcon(asset.deviceType)} text-blue-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-900">${asset.deviceName}</h4>
+                            <p class="text-gray-600">${asset.id}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-1">
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Device Type:</span>
+                            <span class="text-gray-900">${asset.deviceType}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Brand/Model:</span>
+                            <span class="text-gray-900">${asset.brandModel}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Operating System:</span>
+                            <span class="text-gray-900">${asset.operatingSystem || 'N/A'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Serial Number:</span>
+                            <span class="text-gray-900">${asset.serialNumber || 'N/A'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Barcode:</span>
+                            <span class="text-gray-900">${asset.barcode || 'N/A'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">QR Code:</span>
+                            <span class="text-gray-900">${asset.qrCode || 'N/A'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Location:</span>
+                            <span class="text-gray-900">${asset.location}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Assigned To:</span>
+                            <span class="text-gray-900">${asset.assignedTo}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Department:</span>
+                            <span class="text-gray-900">${asset.department}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Ownership:</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOwnershipColor(asset.ownershipType)}">
+                                ${formatOwnership(asset.ownershipType)}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Status:</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border status-${asset.status}">
+                                ${asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Warranty End:</span>
+                            <span class="text-gray-900">${new Date(asset.warrantyEnd).toLocaleDateString()} <span class="text-sm ${warrantyStatus === 'Expired' ? 'text-red-500' : warrantyStatus === 'Expiring Soon' ? 'text-yellow-500' : 'text-green-500'}">(${warrantyStatus})</span></span>
+                        </div>
+                        ${leaseInfo}
+                        <div class="grid grid-cols-2 gap-4 py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-700">Purchase Date:</span>
+                            <span class="text-gray-900">${asset.purchaseDate ? new Date(asset.purchaseDate).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 py-3">
+                            <span class="font-medium text-gray-700">Purchase Cost:</span>
+                            <span class="text-gray-900">${asset.purchaseCost ? '$' + asset.purchaseCost.toFixed(2) : 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('assetDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            document.getElementById('assetDetailModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function toggleEditMode() {
+            editModeEnabled = !editModeEnabled;
+            const toggleBtn = document.getElementById('editModeToggle');
+            const selectAllHeader = document.getElementById('selectAllHeader');
+            const selectAllHeaderLease = document.getElementById('selectAllHeaderLease');
+
+            if (editModeEnabled) {
+                toggleBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>Disable Edit Mode';
+                toggleBtn.className = 'bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors';
+
+                // Show appropriate select all header based on current view
+                if (currentView === 'leaseBundles') {
+                    selectAllHeaderLease.classList.remove('hidden');
+                } else {
+                    selectAllHeader.classList.remove('hidden');
+                }
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-unlock mr-2"></i>Enable Edit Mode';
+                toggleBtn.className = 'bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors';
+                selectAllHeader.classList.add('hidden');
+                selectAllHeaderLease.classList.add('hidden');
+                selectedAssets.clear();
+            }
+
+            if (currentView === 'leaseBundles') {
+                renderLeaseBundles();
+            } else {
+                applyFilters();
+            }
+            updateBulkActions();
+        }
+
+        // View switching function
+        function switchView(view) {
+            currentView = view;
+            selectedAssets.clear();
+
+            // Update tab styling
+            const activeTab = document.getElementById('activeTab');
+            const archivedTab = document.getElementById('archivedTab');
+            const leaseBundlesTab = document.getElementById('leaseBundlesTab');
+
+            // Reset all tabs to default style
+            activeTab.className = 'px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50';
+            archivedTab.className = 'px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50';
+            leaseBundlesTab.className = 'px-6 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50';
+
+            // Set active tab style
+            if (view === 'active') {
+                activeTab.className = 'px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50';
+            } else if (view === 'archived') {
+                archivedTab.className = 'px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50';
+            } else if (view === 'leaseBundles') {
+                leaseBundlesTab.className = 'px-6 py-4 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50';
+            }
+
+            // Switch table headers
+            const assetHeaders = document.getElementById('assetTableHeaders');
+            const leaseHeaders = document.getElementById('leaseBundleTableHeaders');
+            const selectAllHeader = document.getElementById('selectAllHeader');
+            const selectAllHeaderLease = document.getElementById('selectAllHeaderLease');
+
+            if (view === 'leaseBundles') {
+                assetHeaders.classList.add('hidden');
+                leaseHeaders.classList.remove('hidden');
+                if (editModeEnabled) {
+                    selectAllHeaderLease.classList.remove('hidden');
+                }
+            } else {
+                assetHeaders.classList.remove('hidden');
+                leaseHeaders.classList.add('hidden');
+                if (editModeEnabled) {
+                    selectAllHeader.classList.remove('hidden');
+                }
+            }
+
+            // Clear filters when switching views
+            document.getElementById('searchInput').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+
+            // Handle different views
+            if (view === 'leaseBundles') {
+                renderLeaseBundles();
+            } else {
+                applyFilters();
+            }
+            updateBulkActions();
+        }
+
+        function deleteAsset(assetId) {
+            if (!editModeEnabled) {
+                alert('Please enable edit mode to delete assets.');
+                return;
+            }
+            if (confirm('Are you sure you want to permanently delete this asset?')) {
+                assets = assets.filter(a => a.id !== assetId);
+                populateLocationFilters();
+                applyFilters();
+                updateDashboard();
+                alert('Asset deleted successfully!');
+            }
+        }
+
+        // Form submission
+        document.getElementById('assetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Prevent multiple submissions
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn.disabled) return;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Saving...';
+
+            const formData = new FormData(this);
+            const assetData = {};
+
+            for (let [key, value] of formData.entries()) {
+                assetData[key] = value;
+            }
+
+            // Ensure we have the asset ID from the form
+            if (!assetData.assetId) {
+                assetData.assetId = generateAssetId();
+            }
+
+            // Map form field names to asset properties
+            const mappedAssetData = {
+                id: assetData.assetId,
+                deviceName: assetData.deviceName,
+                deviceType: assetData.deviceType,
+                brandModel: assetData.brandModel,
+                serialNumber: assetData.serialNumber,
+                location: assetData.location,
+                assignedTo: assetData.assignedTo,
+                department: assetData.department,
+                ownershipType: assetData.ownershipType,
+                operatingSystem: assetData.operatingSystem,
+                status: assetData.status,
+                warrantyStart: assetData.warrantyStart,
+                warrantyEnd: assetData.warrantyEnd,
+                leaseExpiryDate: assetData.leaseExpiryDate,
+                purchaseDate: assetData.purchaseDate,
+                purchaseCost: assetData.purchaseCost ? parseFloat(assetData.purchaseCost) : 0,
+                supplier: assetData.supplier,
+                macAddress: assetData.macAddress,
+                barcode: assetData.barcode,
+                qrCode: assetData.qrCode,
+                loanEndDate: assetData.loanEndDate,
+                notes: assetData.notes,
+                archived: false
+            };
+
+            // Get the original asset ID if editing
+            const modalTitle = document.getElementById('modalTitle').textContent;
+            const isEditing = modalTitle === 'Edit Asset';
+            let originalAssetId = null;
+
+            if (isEditing) {
+                // Find the original asset being edited
+                const form = document.getElementById('assetForm');
+                originalAssetId = form.dataset.originalId;
+            }
+
+            // Check for duplicate Asset ID (only if it's a new asset or the ID has changed)
+            const isDuplicateId = assets.some(asset =>
+                asset.id === mappedAssetData.id &&
+                (!isEditing || asset.id !== originalAssetId)
+            );
+
+            if (isDuplicateId) {
+                alert('Asset ID already exists. Please use a different Asset ID.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Save Asset';
+                return;
+            }
+
+            // Simulate processing time then complete
+            setTimeout(() => {
+                try {
+                    // Check if editing existing asset
+                    const existingIndex = assets.findIndex(a => a.id === (originalAssetId || mappedAssetData.id));
+                    if (existingIndex !== -1 && isEditing) {
+                        assets[existingIndex] = { ...assets[existingIndex], ...mappedAssetData };
+                        populateLocationFilters();
+                        applyFilters();
+                        updateDashboard();
+                        alert('Asset updated successfully!');
+                        closeModal();
+                    } else {
+                        assets.push(mappedAssetData);
+                        populateLocationFilters();
+                        applyFilters();
+                        updateDashboard();
+                        alert('New asset added successfully!');
+                        closeModal();
+                    }
+                } catch (error) {
+                    console.error('Error saving asset:', error);
+                    alert('Error saving asset. Please try again.');
+                    // Reset button state on error
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Save Asset';
+                }
+            }, 500);
+        });
+
+        // QR Scanner variables
+        let html5QrCode = null;
+        let lastScannedResult = '';
+
+        // QR Scanner Functions
+        function openQRScanner() {
+            document.getElementById('qrScannerModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Initialize QR scanner
+            html5QrCode = new Html5Qrcode("qr-reader");
+
+            // Start scanning
+            html5QrCode.start(
+                { facingMode: "environment" }, // Use back camera
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText, decodedResult) => {
+                    // Success callback
+                    lastScannedResult = decodedText;
+                    document.getElementById('qr-result-text').textContent = decodedText;
+                    document.getElementById('qr-reader-results').classList.remove('hidden');
+
+                    // Stop scanning after successful read
+                    html5QrCode.stop().then(() => {
+                        html5QrCode.clear();
+                    }).catch(err => {
+                        console.log("Error stopping scanner:", err);
+                    });
+                },
+                (errorMessage) => {
+                    // Error callback - usually just means no QR code detected
+                    // We don't need to show these errors as they're normal
+                }
+            ).catch(err => {
+                console.log("Error starting scanner:", err);
+                alert("Unable to start camera. Please make sure you've granted camera permissions and try again.");
+            });
+        }
+
+        function closeQRScanner() {
+            // Stop the scanner if it's running
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    html5QrCode = null;
+                }).catch(err => {
+                    console.log("Error stopping scanner:", err);
+                    html5QrCode = null; // Reset even if there's an error
+                });
+            }
+
+            // Hide the modal and reset UI
+            document.getElementById('qrScannerModal').classList.add('hidden');
+            document.getElementById('qr-reader-results').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+
+            // Clear the QR reader div content
+            const qrReaderDiv = document.getElementById('qr-reader');
+            qrReaderDiv.innerHTML = '';
+
+            // Reset the scanned result
+            lastScannedResult = '';
+        }
+
+        function restartQRScanner() {
+            document.getElementById('qr-reader-results').classList.add('hidden');
+
+            if (html5QrCode) {
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText, decodedResult) => {
+                        lastScannedResult = decodedText;
+                        document.getElementById('qr-result-text').textContent = decodedText;
+                        document.getElementById('qr-reader-results').classList.remove('hidden');
+
+                        html5QrCode.stop().then(() => {
+                            html5QrCode.clear();
+                        }).catch(err => {
+                            console.log("Error stopping scanner:", err);
+                        });
+                    },
+                    (errorMessage) => {
+                        // Silent error handling
+                    }
+                ).catch(err => {
+                    console.log("Error restarting scanner:", err);
+                    alert("Unable to restart camera. Please try closing and reopening the scanner.");
+                });
+            }
+        }
+
+        function searchScannedAsset() {
+            if (!lastScannedResult) return;
+
+            // Close QR scanner first with proper cleanup
+            closeQRScanner();
+
+            // Small delay to ensure modal closes properly
+            setTimeout(() => {
+                // Search for the asset by ID, serial number, device name, barcode, or QR code
+                const foundAsset = assets.find(asset =>
+                    asset.id === lastScannedResult ||
+                    asset.serialNumber === lastScannedResult ||
+                    asset.deviceName === lastScannedResult ||
+                    asset.brandModel === lastScannedResult ||
+                    asset.barcode === lastScannedResult ||
+                    asset.qrCode === lastScannedResult
+                );
+
+                if (foundAsset) {
+                    // Show asset details
+                    showAssetDetail(foundAsset);
+
+                    // Also highlight it in the table by applying a search filter
+                    document.getElementById('searchInput').value = lastScannedResult;
+                    applyFilters();
+                } else {
+                    alert(`Asset not found!\n\nScanned: "${lastScannedResult}"\n\nThe scanned code doesn't match any Asset ID, Serial Number, Device Name, Brand/Model, Barcode, or QR Code in your inventory.\n\nWould you like to add this as a new asset instead?`);
+                }
+            }, 300);
+        }
+
+        function addAssetWithQR() {
+            if (!lastScannedResult) return;
+
+            // Close QR scanner first with proper cleanup
+            closeQRScanner();
+
+            // Small delay to ensure modal closes properly before opening new one
+            setTimeout(() => {
+                // Open add asset modal and pre-fill with scanned data
+                openModal('Add New Asset');
+
+                // Try to determine what type of data was scanned and fill appropriate field
+                const form = document.getElementById('assetForm');
+
+                // If it looks like an asset ID (contains SCH- or similar pattern)
+                if (lastScannedResult.includes('SCH-') || lastScannedResult.includes('AST-') || /^[A-Z]{2,4}-\d+/.test(lastScannedResult)) {
+                    form.querySelector('input[name="assetId"]').value = lastScannedResult;
+                    form.querySelector('input[name="qrCode"]').value = lastScannedResult; // Also add to QR code field
+                }
+                // If it looks like a barcode (numeric, 8-14 digits)
+                else if (/^\d{8,14}$/.test(lastScannedResult)) {
+                    form.querySelector('input[name="barcode"]').value = lastScannedResult;
+                }
+                // If it looks like a serial number (alphanumeric, no spaces)
+                else if (/^[A-Z0-9]+$/i.test(lastScannedResult) && lastScannedResult.length > 5) {
+                    form.querySelector('input[name="serialNumber"]').value = lastScannedResult;
+                }
+                // Otherwise, put it in QR code field and device name
+                else {
+                    form.querySelector('input[name="qrCode"]').value = lastScannedResult;
+                    form.querySelector('input[name="deviceName"]').value = lastScannedResult;
+                }
+
+                alert(`QR code data has been added to the form!\n\nScanned: "${lastScannedResult}"\n\nPlease fill in the remaining asset details.`);
+            }, 300);
+        }
+
+        // Event listeners
+        document.querySelector('.bg-blue-600').addEventListener('click', () => openModal());
+        document.querySelector('.bg-green-600').addEventListener('click', () => openQRScanner());
+
+        // Selection functions
+        function toggleAssetSelection(assetId) {
+            if (selectedAssets.has(assetId)) {
+                selectedAssets.delete(assetId);
+            } else {
+                selectedAssets.add(assetId);
+            }
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const bulkArchiveBtn = document.getElementById('bulkArchiveBtn');
+            const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+            const bulkRestoreBtn = document.getElementById('bulkRestoreBtn');
+            const bulkExportBtn = document.getElementById('bulkExportBtn');
+
+            // Hide all buttons first
+            bulkArchiveBtn.classList.add('hidden');
+            bulkDeleteBtn.classList.add('hidden');
+            bulkRestoreBtn.classList.add('hidden');
+            bulkExportBtn.classList.add('hidden');
+
+            if (selectedAssets.size > 0) {
+                // Export button is always available when items are selected
+                bulkExportBtn.classList.remove('hidden');
+
+                if (editModeEnabled) {
+                    if (currentView === 'active') {
+                        bulkArchiveBtn.classList.remove('hidden');
+                        bulkDeleteBtn.classList.remove('hidden');
+                    } else {
+                        bulkRestoreBtn.classList.remove('hidden');
+                        bulkDeleteBtn.classList.remove('hidden');
+                    }
+                }
+            }
+        }
+
+        // Select all functionality
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.asset-checkbox');
+            const isChecked = this.checked;
+
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+                const assetId = checkbox.dataset.assetId;
+                if (isChecked) {
+                    selectedAssets.add(assetId);
+                } else {
+                    selectedAssets.delete(assetId);
+                }
+            });
+            updateBulkActions();
+        });
+
+
+
+        // Toggle lease fields
+        function toggleLeaseFields() {
+            const ownershipType = document.querySelector('select[name="ownershipType"]').value;
+            const leaseField = document.getElementById('leaseExpiryField');
+
+            if (ownershipType === 'lease' || ownershipType === 'lease-to-own') {
+                leaseField.classList.remove('hidden');
+            } else {
+                leaseField.classList.add('hidden');
+            }
+        }
+
+        // Import/Export Modal functions
+        function openImportModal() {
+            document.getElementById('importModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('filePreview').classList.add('hidden');
+            document.getElementById('csvFileInput').value = '';
+        }
+
+        function openExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // File handling
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'text/csv') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const csv = e.target.result;
+                    const preview = csv.split('\n').slice(0, 5).join('\n');
+                    document.getElementById('csvPreview').textContent = preview + '\n...';
+                    document.getElementById('filePreview').classList.remove('hidden');
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Please select a valid CSV file.');
+            }
+        }
+
+        function processImport() {
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file first.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let importedCount = 0;
+                let duplicateCount = 0;
+                let errorCount = 0;
+                let warnings = [];
+                let criticalErrors = [];
+
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n').filter(line => line.trim()); // Remove empty lines
+
+                    if (lines.length < 2) {
+                        alert('❌ Import Failed!\n\nCSV file must contain at least a header row and one data row.');
+                        return;
+                    }
+
+                    // Parse headers more carefully
+                    const headerLine = lines[0];
+                    const headers = parseCSVLine(headerLine).map(h => h.trim().replace(/^"|"$/g, ''));
+
+                    // Validate that we have at least some recognizable headers
+                    const recognizedHeaders = ['asset id', 'device name', 'device type', 'brand/model', 'location'];
+                    const hasValidHeaders = headers.some(header =>
+                        recognizedHeaders.includes(header.toLowerCase())
+                    );
+
+                    if (!hasValidHeaders) {
+                        criticalErrors.push('No recognized column headers found. Expected headers like: Asset ID, Device Name, Device Type, etc.');
+                    }
+
+                    // Process each data row
+                    for (let i = 1; i < lines.length; i++) {
+                        try {
+                            const line = lines[i].trim();
+                            if (!line) continue;
+
+                            // Parse CSV line properly handling quoted values
+                            const values = parseCSVLine(line);
+                            const newAsset = {
+                                archived: false
+                            };
+
+                            headers.forEach((header, index) => {
+                                const value = (values[index] || '').trim().replace(/^"|"$/g, ''); // Remove surrounding quotes
+
+                                // Map headers to asset properties (matching export structure)
+                                switch(header.toLowerCase()) {
+                                    case 'asset id':
+                                        newAsset.id = value;
+                                        break;
+                                    case 'device name':
+                                        newAsset.deviceName = value;
+                                        break;
+                                    case 'device type':
+                                        newAsset.deviceType = value;
+                                        break;
+                                    case 'brand/model':
+                                        newAsset.brandModel = value;
+                                        break;
+                                    case 'serial number':
+                                        newAsset.serialNumber = value;
+                                        break;
+                                    case 'location':
+                                        newAsset.location = value;
+                                        break;
+                                    case 'assigned to':
+                                        newAsset.assignedTo = value;
+                                        break;
+                                    case 'department':
+                                        newAsset.department = value;
+                                        break;
+                                    case 'ownership type':
+                                    case 'ownership':
+                                        // Convert display format back to internal format
+                                        const ownershipMap = {
+                                            'School Owned': 'school-owned',
+                                            'Lease': 'lease',
+                                            'Lease to Own': 'lease-to-own'
+                                        };
+                                        newAsset.ownershipType = ownershipMap[value] || value.toLowerCase().replace(/\s+/g, '-');
+                                        break;
+                                    case 'status':
+                                        newAsset.status = value.toLowerCase();
+                                        break;
+                                    case 'warranty end':
+                                        newAsset.warrantyEnd = value ? convertDateFormat(value) : '';
+                                        break;
+                                    case 'lease expiry date':
+                                    case 'lease expiry':
+                                        newAsset.leaseExpiryDate = value ? convertDateFormat(value) : '';
+                                        break;
+                                    case 'purchase date':
+                                        newAsset.purchaseDate = value ? convertDateFormat(value) : '';
+                                        break;
+                                    case 'purchase cost':
+                                        newAsset.purchaseCost = value ? parseFloat(value.replace(/[$,]/g, '')) || 0 : 0;
+                                        break;
+                                    case 'operating system':
+                                        newAsset.operatingSystem = value;
+                                        break;
+                                    case 'mac address':
+                                        newAsset.macAddress = value;
+                                        break;
+                                    case 'barcode':
+                                        newAsset.barcode = value;
+                                        break;
+                                    case 'qr code':
+                                        newAsset.qrCode = value;
+                                        break;
+                                    case 'supplier':
+                                        newAsset.supplier = value;
+                                        break;
+                                    case 'notes':
+                                        newAsset.notes = value;
+                                        break;
+                                }
+                            });
+
+                            // Check for duplicate Asset ID
+                            if (newAsset.id && assets.some(asset => asset.id === newAsset.id)) {
+                                duplicateCount++;
+                                warnings.push(`Row ${i + 1}: Duplicate Asset ID "${newAsset.id}" - skipped`);
+                                continue;
+                            }
+
+                            // Generate Asset ID if not provided
+                            if (!newAsset.id) {
+                                newAsset.id = generateAssetId();
+                                warnings.push(`Row ${i + 1}: Auto-generated Asset ID "${newAsset.id}"`);
+                            }
+
+                            // Set defaults for required fields
+                            if (!newAsset.deviceName) {
+                                newAsset.deviceName = 'Imported Device';
+                                warnings.push(`Row ${i + 1}: Used default device name`);
+                            }
+                            if (!newAsset.deviceType) {
+                                newAsset.deviceType = 'Other';
+                                warnings.push(`Row ${i + 1}: Used default device type`);
+                            }
+                            if (!newAsset.status) newAsset.status = 'active';
+                            if (!newAsset.ownershipType) newAsset.ownershipType = 'school-owned';
+                            if (!newAsset.location) newAsset.location = 'Unassigned';
+                            if (!newAsset.assignedTo) newAsset.assignedTo = 'Unassigned';
+
+                            assets.push(newAsset);
+                            importedCount++;
+
+                        } catch (lineError) {
+                            errorCount++;
+                            criticalErrors.push(`Row ${i + 1}: ${lineError.message}`);
+                        }
+                    }
+
+                } catch (error) {
+                    criticalErrors.push(`File processing error: ${error.message}`);
+                }
+
+                // Always close modal first
+                closeImportModal();
+
+                // Update display
+                populateLocationFilters();
+                applyFilters();
+                updateDashboard();
+
+                // Show appropriate message based on results - with a small delay to ensure modal closes
+                setTimeout(() => {
+                    if (criticalErrors.length > 0 && importedCount === 0) {
+                        // Complete failure - nothing imported due to critical errors
+                        let errorMessage = '❌ Import Failed!\n\n';
+                        errorMessage += 'Critical errors prevented import:\n';
+                        errorMessage += criticalErrors.slice(0, 5).map(err => `• ${err}`).join('\n');
+                        if (criticalErrors.length > 5) {
+                            errorMessage += `\n• ... and ${criticalErrors.length - 5} more errors`;
+                        }
+                        errorMessage += '\n\nPlease check your CSV file format and try again.';
+                        alert(errorMessage);
+
+                    } else if (importedCount > 0) {
+                        // Success - at least some assets were imported
+                        let message = `✅ Import Successful!\n\n`;
+                        message += `📊 Import Summary:\n`;
+                        message += `• Successfully imported: ${importedCount} new assets\n`;
+
+                        if (duplicateCount > 0) {
+                            message += `• Skipped duplicates: ${duplicateCount} assets (Asset IDs already exist)\n`;
+                        }
+                        if (errorCount > 0) {
+                            message += `• Rows with errors: ${errorCount} (skipped)\n`;
+                        }
+
+                        const totalProcessed = importedCount + duplicateCount + errorCount;
+                        message += `• Total rows processed: ${totalProcessed}\n`;
+
+                        if (warnings.length > 0) {
+                            message += `\n⚠️ Import Warnings:\n`;
+                            message += warnings.slice(0, 5).map(w => `• ${w}`).join('\n');
+                            if (warnings.length > 5) {
+                                message += `\n• ... and ${warnings.length - 5} more warnings`;
+                            }
+                        }
+
+                        if (criticalErrors.length > 0) {
+                            message += `\n\n❌ Some rows had errors and were skipped:\n`;
+                            message += criticalErrors.slice(0, 3).map(err => `• ${err}`).join('\n');
+                            if (criticalErrors.length > 3) {
+                                message += `\n• ... and ${criticalErrors.length - 3} more errors`;
+                            }
+                        }
+
+                        message += `\n\n✨ Your asset inventory has been updated!`;
+                        alert(message);
+
+                    } else if (duplicateCount > 0) {
+                        // No new imports but duplicates found
+                        let message = `⚠️ Import Complete - No New Assets Added\n\n`;
+                        message += `📊 Summary:\n`;
+                        message += `• Found ${duplicateCount} duplicate Asset IDs (already exist in system)\n`;
+                        if (errorCount > 0) {
+                            message += `• ${errorCount} rows had errors and were skipped\n`;
+                        }
+                        message += `• 0 new assets imported\n\n`;
+
+                        message += `💡 Tips:\n`;
+                        message += `• Check your Asset IDs - they must be unique\n`;
+                        message += `• Use the Export function to see existing Asset IDs\n`;
+                        message += `• Leave Asset ID blank to auto-generate new ones`;
+
+                        if (warnings.length > 0) {
+                            message += `\n\n⚠️ Issues found:\n`;
+                            message += warnings.slice(0, 5).map(w => `• ${w}`).join('\n');
+                        }
+
+                        alert(message);
+
+                    } else {
+                        // Nothing imported and no clear reason
+                        let message = `⚠️ Import Complete - No Assets Added\n\n`;
+                        message += `📊 Summary:\n`;
+                        message += `• 0 new assets imported\n`;
+                        message += `• 0 duplicates found\n`;
+                        if (errorCount > 0) {
+                            message += `• ${errorCount} rows had errors\n`;
+                        }
+
+                        message += `\n🔍 This could be because:\n`;
+                        message += `• CSV file was empty or had no valid data rows\n`;
+                        message += `• Column headers don't match expected format\n`;
+                        message += `• All data rows were invalid or incomplete\n\n`;
+
+                        message += `💡 Try:\n`;
+                        message += `• Export existing data first to see the correct format\n`;
+                        message += `• Check that your CSV has proper headers and data`;
+
+                        if (warnings.length > 0 || criticalErrors.length > 0) {
+                            message += `\n\n⚠️ Issues found:\n`;
+                            const allIssues = [...warnings, ...criticalErrors];
+                            message += allIssues.slice(0, 5).map(w => `• ${w}`).join('\n');
+                            if (allIssues.length > 5) {
+                                message += `\n• ... and ${allIssues.length - 5} more issues`;
+                            }
+                        }
+
+                        alert(message);
+                    }
+                }, 200);
+            };
+
+            reader.onerror = function() {
+                alert('❌ File Read Error!\n\nCould not read the selected file. Please try again with a different file.');
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Helper function to parse CSV lines with proper quote handling
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            result.push(current);
+            return result;
+        }
+
+        // Helper function to convert date formats for import
+        function convertDateFormat(dateString) {
+            if (!dateString) return '';
+
+            // Try to parse various date formats
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                // Try MM/DD/YYYY format
+                const parts = dateString.split('/');
+                if (parts.length === 3) {
+                    const newDate = new Date(parts[2], parts[0] - 1, parts[1]);
+                    if (!isNaN(newDate.getTime())) {
+                        return newDate.toISOString().split('T')[0];
+                    }
+                }
+                return dateString; // Return as-is if can't parse
+            }
+
+            return date.toISOString().split('T')[0];
+        }
+
+        function processExport() {
+            const format = document.querySelector('input[name="exportFormat"]:checked').value;
+            const locationFilter = document.getElementById('exportLocationFilter').value;
+            const statusFilter = document.getElementById('exportStatusFilter').value;
+
+            // Get selected columns
+            const selectedColumns = [];
+            document.querySelectorAll('.export-column:checked').forEach(checkbox => {
+                selectedColumns.push(checkbox.dataset.column);
+            });
+
+            if (selectedColumns.length === 0) {
+                alert('Please select at least one column to export.');
+                return;
+            }
+
+            // Filter assets
+            let filteredAssets = assets.filter(asset => !asset.archived);
+            if (locationFilter) {
+                filteredAssets = filteredAssets.filter(asset => asset.location === locationFilter);
+            }
+            if (statusFilter) {
+                filteredAssets = filteredAssets.filter(asset => asset.status === statusFilter);
+            }
+
+            if (format === 'csv') {
+                exportCSV(filteredAssets, selectedColumns);
+            } else {
+                exportPDF(filteredAssets, selectedColumns);
+            }
+
+            closeExportModal();
+        }
+
+        function exportCSV(assets, columns) {
+            const headers = columns.map(col => {
+                const headerMap = {
+                    'id': 'Asset ID',
+                    'deviceName': 'Device Name',
+                    'deviceType': 'Device Type',
+                    'brandModel': 'Brand/Model',
+                    'serialNumber': 'Serial Number',
+                    'location': 'Location',
+                    'assignedTo': 'Assigned To',
+                    'department': 'Department',
+                    'ownershipType': 'Ownership Type',
+                    'status': 'Status',
+                    'warrantyEnd': 'Warranty End',
+                    'leaseExpiryDate': 'Lease Expiry Date',
+                    'purchaseDate': 'Purchase Date',
+                    'purchaseCost': 'Purchase Cost',
+                    'operatingSystem': 'Operating System',
+                    'macAddress': 'MAC Address',
+                    'barcode': 'Barcode',
+                    'qrCode': 'QR Code',
+                    'supplier': 'Supplier',
+                    'notes': 'Notes'
+                };
+                return headerMap[col] || col;
+            });
+
+            const csvRows = [headers.join(',')];
+
+            assets.forEach(asset => {
+                const row = columns.map(col => {
+                    let value = asset[col] || '';
+
+                    // Format specific fields for CSV
+                    if (col === 'purchaseCost' && value) {
+                        value = parseFloat(value).toFixed(2);
+                    } else if ((col === 'warrantyEnd' || col === 'leaseExpiryDate' || col === 'purchaseDate') && value) {
+                        value = new Date(value).toLocaleDateString();
+                    } else if (col === 'ownershipType') {
+                        const ownershipMap = {
+                            'school-owned': 'School Owned',
+                            'lease': 'Lease',
+                            'lease-to-own': 'Lease to Own'
+                        };
+                        value = ownershipMap[value] || value;
+                    } else if (col === 'status') {
+                        value = value.charAt(0).toUpperCase() + value.slice(1);
+                    }
+
+                    // Escape CSV values properly
+                    value = value.toString();
+                    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                        value = '"' + value.replace(/"/g, '""') + '"';
+                    }
+
+                    return value;
+                });
+                csvRows.push(row.join(','));
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "school_assets_export.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportPDF(assets, columns) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4'); // Landscape orientation for better table fit
+
+            // Header mapping
+            const headers = columns.map(col => {
+                const headerMap = {
+                    'id': 'Asset ID',
+                    'deviceName': 'Device Name',
+                    'deviceType': 'Device Type',
+                    'brandModel': 'Brand/Model',
+                    'serialNumber': 'Serial Number',
+                    'location': 'Location',
+                    'assignedTo': 'Assigned To',
+                    'department': 'Department',
+                    'ownershipType': 'Ownership Type',
+                    'status': 'Status',
+                    'warrantyEnd': 'Warranty End',
+                    'leaseExpiryDate': 'Lease Expiry Date',
+                    'purchaseDate': 'Purchase Date',
+                    'purchaseCost': 'Purchase Cost',
+                    'operatingSystem': 'Operating System',
+                    'macAddress': 'MAC Address',
+                    'barcode': 'Barcode',
+                    'qrCode': 'QR Code',
+                    'supplier': 'Supplier',
+                    'notes': 'Notes'
+                };
+                return headerMap[col] || col;
+            });
+
+            // Add title and header
+            doc.setFontSize(20);
+            doc.setTextColor(37, 99, 235); // Blue color
+            doc.text('SchoolTech Asset Report', 20, 20);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 20, 30);
+            doc.text(`Report ID: RPT-${Date.now()}`, 20, 35);
+
+            // Add summary statistics
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text('Report Summary:', 20, 45);
+
+            doc.setFontSize(9);
+            const totalAssets = assets.length;
+            const activeAssets = assets.filter(a => a.status === 'active').length;
+            const leasedAssets = assets.filter(a => a.ownershipType === 'lease' || a.ownershipType === 'lease-to-own').length;
+            const totalValue = assets.reduce((sum, a) => sum + (parseFloat(a.purchaseCost) || 0), 0);
+            const uniqueLocations = [...new Set(assets.map(a => a.location))].length;
+
+            doc.text(`Total Assets: ${totalAssets}`, 20, 52);
+            doc.text(`Active Assets: ${activeAssets}`, 80, 52);
+            doc.text(`Leased Assets: ${leasedAssets}`, 140, 52);
+            doc.text(`Unique Locations: ${uniqueLocations}`, 200, 52);
+            doc.text(`Total Value: $${totalValue.toLocaleString()}`, 20, 58);
+
+            // Prepare table data
+            const tableData = assets.map(asset => {
+                return columns.map(col => {
+                    let value = asset[col] || '';
+
+                    // Format specific fields
+                    if (col === 'purchaseCost' && value) {
+                        value = '$' + parseFloat(value).toFixed(2);
+                    } else if ((col === 'warrantyEnd' || col === 'leaseExpiryDate' || col === 'purchaseDate') && value) {
+                        value = new Date(value).toLocaleDateString();
+                    } else if (col === 'ownershipType') {
+                        const ownershipMap = {
+                            'school-owned': 'School Owned',
+                            'lease': 'Lease',
+                            'lease-to-own': 'Lease to Own'
+                        };
+                        value = ownershipMap[value] || value;
+                    } else if (col === 'status') {
+                        value = value.charAt(0).toUpperCase() + value.slice(1);
+                    }
+
+                    return value.toString();
+                });
+            });
+
+            // Add table using autoTable plugin
+            doc.autoTable({
+                head: [headers],
+                body: tableData,
+                startY: 65,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    overflow: 'linebreak',
+                    halign: 'left'
+                },
+                headStyles: {
+                    fillColor: [37, 99, 235], // Blue header
+                    textColor: [255, 255, 255],
+                    fontSize: 9,
+                    fontStyle: 'bold'
+                },
+                alternateRowStyles: {
+                    fillColor: [249, 250, 251] // Light gray for alternate rows
+                },
+                columnStyles: {
+                    // Adjust column widths based on content
+                    0: { cellWidth: 'auto', minCellWidth: 15 }, // Asset ID
+                    1: { cellWidth: 'auto', minCellWidth: 20 }, // Device Name
+                    2: { cellWidth: 'auto', minCellWidth: 15 }, // Device Type
+                    3: { cellWidth: 'auto', minCellWidth: 20 }, // Brand/Model
+                },
+                margin: { left: 10, right: 10 },
+                tableWidth: 'auto',
+                didDrawPage: function (data) {
+                    // Add footer to each page
+                    const pageCount = doc.internal.getNumberOfPages();
+                    const pageSize = doc.internal.pageSize;
+                    const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+
+                    doc.setFontSize(8);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('SchoolTech Asset Management System - Confidential Report',
+                        data.settings.margin.left, pageHeight - 15);
+                    doc.text(`Page ${data.pageNumber} of ${pageCount}`,
+                        pageSize.width - 30, pageHeight - 15);
+                }
+            });
+
+            // Save the PDF
+            const fileName = `SchoolTech_Asset_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+
+            alert(`PDF report "${fileName}" has been downloaded successfully!`);
+        }
+
+        // Update OS options based on device type
+        function updateOperatingSystemOptions() {
+            const deviceType = document.querySelector('select[name="deviceType"]').value;
+            const osSelect = document.querySelector('select[name="operatingSystem"]');
+
+            // Clear existing options except the first one
+            osSelect.innerHTML = '<option value="">Select OS</option>';
+
+            let osOptions = [];
+            switch(deviceType) {
+                case 'laptop':
+                case 'desktop':
+                    osOptions = ['macOS', 'Windows', 'Linux'];
+                    break;
+                case 'ipad':
+                    osOptions = ['iPadOS'];
+                    break;
+                case 'iphone':
+                    osOptions = ['iOS'];
+                    break;
+                default:
+                    osOptions = ['macOS', 'Windows', 'iOS', 'iPadOS', 'Android', 'Linux', 'N/A'];
+            }
+
+            osOptions.forEach(os => {
+                const option = document.createElement('option');
+                option.value = os;
+                option.textContent = os;
+                osSelect.appendChild(option);
+            });
+        }
+
+
+
+        // Bulk action functions
+        document.getElementById('bulkArchiveBtn').addEventListener('click', function() {
+            if (selectedAssets.size === 0) return;
+
+            const selectedCount = selectedAssets.size;
+            if (confirm(`Are you sure you want to archive ${selectedCount} selected assets?`)) {
+                assets.forEach(asset => {
+                    if (selectedAssets.has(asset.id)) {
+                        asset.archived = true;
+                    }
+                });
+                selectedAssets.clear();
+                populateLocationFilters();
+                applyFilters();
+                updateDashboard();
+                updateBulkActions();
+                alert(`${selectedCount} assets have been archived successfully!`);
+            }
+        });
+
+        document.getElementById('bulkDeleteBtn').addEventListener('click', function() {
+            if (selectedAssets.size === 0) return;
+
+            const selectedCount = selectedAssets.size;
+            if (confirm(`Are you sure you want to permanently delete ${selectedCount} selected assets? This action cannot be undone.`)) {
+                assets = assets.filter(asset => !selectedAssets.has(asset.id));
+                selectedAssets.clear();
+                populateLocationFilters();
+                applyFilters();
+                updateDashboard();
+                updateBulkActions();
+                alert(`${selectedCount} assets have been deleted successfully!`);
+            }
+        });
+
+        document.getElementById('bulkRestoreBtn').addEventListener('click', function() {
+            if (selectedAssets.size === 0) return;
+
+            const selectedCount = selectedAssets.size;
+            if (confirm(`Are you sure you want to restore ${selectedCount} selected assets?`)) {
+                assets.forEach(asset => {
+                    if (selectedAssets.has(asset.id)) {
+                        asset.archived = false;
+                    }
+                });
+                selectedAssets.clear();
+                populateLocationFilters();
+                applyFilters();
+                updateDashboard();
+                updateBulkActions();
+                alert(`${selectedCount} assets have been restored successfully!`);
+            }
+        });
+
+        document.getElementById('bulkExportBtn').addEventListener('click', function() {
+            if (selectedAssets.size === 0) return;
+
+            // Get selected assets from the filtered list
+            const selectedAssetsList = filteredAssets.filter(asset => selectedAssets.has(asset.id));
+
+            // Default columns for bulk export
+            const defaultColumns = ['id', 'deviceName', 'deviceType', 'brandModel', 'location', 'assignedTo', 'ownershipType', 'status'];
+
+            // Export as CSV
+            const headers = defaultColumns.map(col => {
+                const headerMap = {
+                    'id': 'Asset ID',
+                    'deviceName': 'Device Name',
+                    'deviceType': 'Device Type',
+                    'brandModel': 'Brand/Model',
+                    'serialNumber': 'Serial Number',
+                    'location': 'Location',
+                    'assignedTo': 'Assigned To',
+                    'department': 'Department',
+                    'ownershipType': 'Ownership Type',
+                    'status': 'Status',
+                    'warrantyEnd': 'Warranty End',
+                    'leaseExpiryDate': 'Lease Expiry Date'
+                };
+                return headerMap[col] || col;
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," +
+                headers.join(',') + '\n' +
+                selectedAssetsList.map(asset =>
+                    defaultColumns.map(col => {
+                        let value = asset[col] || '';
+                        // Escape commas and quotes in CSV
+                        if (value.toString().includes(',') || value.toString().includes('"')) {
+                            value = '"' + value.toString().replace(/"/g, '""') + '"';
+                        }
+                        return value;
+                    }).join(',')
+                ).join('\n');
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `selected_assets_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert(`Exported ${selectedAssetsList.length} selected assets to CSV!`);
+        });
+
+        // Code Viewer Functions
+        function openCodeViewer() {
+            const codeContent = document.getElementById('codeContent');
+            const fullCode = document.documentElement.outerHTML;
+            codeContent.textContent = fullCode;
+            document.getElementById('codeViewerModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCodeViewer() {
+            document.getElementById('codeViewerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function copyCodeToClipboard() {
+            const codeContent = document.getElementById('codeContent').textContent;
+
+            // Create a temporary textarea element
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = codeContent;
+            document.body.appendChild(tempTextarea);
+
+            // Select and copy the text
+            tempTextarea.select();
+            tempTextarea.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                document.execCommand('copy');
+
+                // Show success feedback
+                const copyBtn = document.querySelector('button[onclick="copyCodeToClipboard()"]');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+                copyBtn.className = 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors';
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.className = 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors';
+                }, 2000);
+
+            } catch (err) {
+                alert('Failed to copy code. Please select and copy manually.');
+            }
+
+            // Remove the temporary textarea
+            document.body.removeChild(tempTextarea);
+        }
+
+        // Update dashboard stats
+        function updateDashboard() {
+            const activeAssets = assets.filter(asset => !asset.archived);
+
+            // Update total assets
+            document.querySelector('.grid .bg-white:nth-child(1) .text-2xl').textContent = activeAssets.length;
+
+            // Update active assets (same as total since we filter archived)
+            document.querySelector('.grid .bg-white:nth-child(2) .text-2xl').textContent = activeAssets.filter(a => a.status === 'active').length;
+
+            // Update needs attention (maintenance + damaged)
+            const needsAttention = activeAssets.filter(a => a.status === 'maintenance' || a.status === 'damaged').length;
+            document.getElementById('needsAttentionCount').textContent = needsAttention;
+
+            // Update ownership counts
+            const schoolOwned = activeAssets.filter(a => a.ownershipType === 'school-owned').length;
+            const lease = activeAssets.filter(a => a.ownershipType === 'lease').length;
+            const leaseToOwn = activeAssets.filter(a => a.ownershipType === 'lease-to-own').length;
+
+            document.getElementById('schoolOwnedCount').textContent = schoolOwned;
+            document.getElementById('leaseCount').textContent = lease;
+            document.getElementById('leaseToOwnCount').textContent = leaseToOwn;
+
+            // Update leases expiring (within 3 months) - only count leased assets
+            const threeMonthsFromNow = new Date();
+            threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+            const leasedAssets = activeAssets.filter(asset =>
+                asset.ownershipType === 'lease' || asset.ownershipType === 'lease-to-own'
+            );
+            const leasesExpiring = leasedAssets.filter(asset => {
+                if (!asset.leaseExpiryDate) return false;
+                const leaseDate = new Date(asset.leaseExpiryDate);
+                return leaseDate <= threeMonthsFromNow && leaseDate >= new Date();
+            }).length;
+            document.getElementById('leasesExpiringCount').textContent = leasesExpiring;
+
+            // Update leases expired - only count leased assets
+            const leasesExpired = leasedAssets.filter(asset => {
+                if (!asset.leaseExpiryDate) return false;
+                const leaseDate = new Date(asset.leaseExpiryDate);
+                return leaseDate < new Date();
+            }).length;
+            document.getElementById('leasesExpiredCount').textContent = leasesExpired;
+
+            // Update warranty expiring (within 1 month)
+            const oneMonthFromNow = new Date();
+            oneMonthFromNow.setMonth(oneMonthFromNow.getMonth() + 1);
+            const warrantyExpiring = activeAssets.filter(asset => {
+                if (!asset.warrantyEnd) return false;
+                const warrantyDate = new Date(asset.warrantyEnd);
+                return warrantyDate <= oneMonthFromNow && warrantyDate >= new Date();
+            }).length;
+            document.getElementById('warrantyExpiringCount').textContent = warrantyExpiring;
+
+            // Update warranty expired
+            const warrantyExpired = activeAssets.filter(asset => {
+                if (!asset.warrantyEnd) return false;
+                const warrantyDate = new Date(asset.warrantyEnd);
+                return warrantyDate < new Date();
+            }).length;
+            document.getElementById('warrantyExpiredCount').textContent = warrantyExpired;
+        }
+
+        // Render lease bundles view
+        function renderLeaseBundles() {
+            const tbody = document.getElementById('assetTableBody');
+
+            // Sample lease bundle data
+            const leaseBundles = [
+                {
+                    id: 'LB-001',
+                    agreementId: 'LA-2023-001',
+                    name: 'Science Lab Equipment Bundle',
+                    supplier: 'TechEd Solutions',
+                    assetCount: 25,
+                    monthlyPayment: 1250.00,
+                    totalValue: 45000.00,
+                    startDate: '2023-01-15',
+                    expiryDate: '2025-01-15',
+                    durationMonths: 24,
+                    status: 'active',
+                    agreementPdf: 'science_lab_lease_agreement.pdf',
+                    contactPerson: 'John Smith',
+                    contactEmail: 'john.smith@techedsolutions.com',
+                    contactPhone: '(555) 123-4567'
+                },
+                {
+                    id: 'LB-002',
+                    agreementId: 'LA-2023-002',
+                    name: 'Staff Laptop Bundle',
+                    supplier: 'Dell Business',
+                    assetCount: 15,
+                    monthlyPayment: 890.00,
+                    totalValue: 32000.00,
+                    startDate: '2023-06-01',
+                    expiryDate: '2025-06-01',
+                    durationMonths: 24,
+                    status: 'active',
+                    agreementPdf: 'dell_laptop_lease_agreement.pdf',
+                    contactPerson: 'Sarah Johnson',
+                    contactEmail: 'sarah.johnson@dell.com',
+                    contactPhone: '(555) 987-6543'
+                },
+                {
+                    id: 'LB-003',
+                    agreementId: 'LA-2023-003',
+                    name: 'Interactive Display Bundle',
+                    supplier: 'Samsung Education',
+                    assetCount: 8,
+                    monthlyPayment: 2100.00,
+                    totalValue: 75600.00,
+                    startDate: '2023-03-20',
+                    expiryDate: '2026-03-20',
+                    durationMonths: 36,
+                    status: 'expiring',
+                    agreementPdf: 'samsung_display_lease_agreement.pdf',
+                    contactPerson: 'Michael Chen',
+                    contactEmail: 'michael.chen@samsung.com',
+                    contactPhone: '(555) 456-7890'
+                },
+                {
+                    id: 'LB-004',
+                    agreementId: 'LA-2022-004',
+                    name: 'Chromebook Student Bundle',
+                    supplier: 'Google Education',
+                    assetCount: 120,
+                    monthlyPayment: 3200.00,
+                    totalValue: 153600.00,
+                    startDate: '2022-08-15',
+                    expiryDate: '2026-08-15',
+                    durationMonths: 48,
+                    status: 'active',
+                    agreementPdf: 'google_chromebook_lease_agreement.pdf',
+                    contactPerson: 'Lisa Wang',
+                    contactEmail: 'lisa.wang@google.com',
+                    contactPhone: '(555) 234-5678'
+                }
+            ];
+
+            tbody.innerHTML = '';
+
+            leaseBundles.forEach(bundle => {
+                const startDate = new Date(bundle.startDate);
+                const expiryDate = new Date(bundle.expiryDate);
+                const currentDate = new Date();
+                const threeMonthsFromNow = new Date();
+                threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+
+                // Calculate lease progress
+                const totalDuration = expiryDate.getTime() - startDate.getTime();
+                const elapsed = currentDate.getTime() - startDate.getTime();
+                const progressPercentage = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+
+                // Determine progress bar color based on percentage
+                let progressColor = '#10b981'; // Green for early stage
+                if (progressPercentage > 80) {
+                    progressColor = '#ef4444'; // Red for near end
+                } else if (progressPercentage > 60) {
+                    progressColor = '#f59e0b'; // Yellow/orange for middle-late stage
+                } else if (progressPercentage > 40) {
+                    progressColor = '#3b82f6'; // Blue for middle stage
+                }
+
+                const isExpiringSoon = expiryDate <= threeMonthsFromNow && expiryDate >= new Date();
+                const isExpired = expiryDate < new Date();
+
+                let statusColor = 'bg-green-100 text-green-800 border-green-200';
+                let statusText = 'Active';
+
+                if (isExpired) {
+                    statusColor = 'bg-red-100 text-red-800 border-red-200';
+                    statusText = 'Expired';
+                } else if (isExpiringSoon) {
+                    statusColor = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                    statusText = 'Expiring Soon';
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
+                row.innerHTML = `
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap ${editModeEnabled ? '' : 'hidden'}">
+                        <input type="checkbox" class="asset-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" data-asset-id="${bundle.id}">
+                    </td>
+                    <td class="px-3 sm:px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                                <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                                    <i class="fas fa-file-contract text-orange-600 text-sm sm:text-base"></i>
+                                </div>
+                            </div>
+                            <div class="ml-3 sm:ml-4 min-w-0 flex-1">
+                                <div class="text-sm font-medium text-gray-900 truncate">${bundle.name}</div>
+                                <div class="text-xs sm:text-sm text-gray-500 truncate">${bundle.agreementId} • ${bundle.assetCount} assets</div>
+                                <div class="text-xs text-gray-500 md:hidden">${bundle.supplier} • $${bundle.monthlyPayment.toFixed(2)}/month</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">${bundle.supplier}</div>
+                        <div class="text-sm text-gray-500">${bundle.contactPerson}</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">$${bundle.monthlyPayment.toFixed(2)}</div>
+                        <div class="text-sm text-gray-500">per month</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="text-sm text-gray-900">$${bundle.totalValue.toLocaleString()}</div>
+                        <div class="text-sm text-gray-500">${bundle.assetCount} assets</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden xl:table-cell">
+                        <div class="text-sm text-gray-900">${bundle.durationMonths} months</div>
+                        <div class="text-sm text-gray-500">${bundle.durationMonths === 36 ? '3 years' : bundle.durationMonths === 48 ? '4 years' : bundle.durationMonths === 24 ? '2 years' : Math.round(bundle.durationMonths/12*10)/10 + ' years'}</div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColor}">
+                            <span class="hidden sm:inline">${statusText}</span>
+                            <span class="sm:hidden">${statusText.charAt(0)}</span>
+                        </span>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                        <div class="mb-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs text-gray-600">${Math.round(progressPercentage)}% complete</span>
+                                <span class="text-xs text-gray-500">${new Date(bundle.expiryDate).toLocaleDateString()}</span>
+                            </div>
+                            <div class="lease-progress-bar">
+                                <div class="lease-progress-fill" style="width: ${progressPercentage}%; background-color: ${progressColor};"></div>
+                            </div>
+                        </div>
+                        <div class="text-xs ${isExpired ? 'text-red-500' : isExpiringSoon ? 'text-yellow-500' : 'text-green-500'}">
+                            ${isExpired ? 'Expired' : isExpiringSoon ? 'Expires Soon' : 'Active'}
+                        </div>
+                    </td>
+                    <td class="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewLeaseAgreement('${bundle.id}')" class="text-red-600 hover:text-red-900" title="View Agreement PDF">
+                                <i class="fas fa-file-pdf text-sm"></i>
+                            </button>
+                            <button onclick="viewBundleAssets('${bundle.id}')" class="text-blue-600 hover:text-blue-900" title="View Bundle Assets">
+                                <i class="fas fa-list text-sm"></i>
+                            </button>
+                            <button onclick="editBundle('${bundle.id}')" class="text-green-600 hover:text-green-900 ${editModeEnabled ? '' : 'hidden'}" title="Edit Bundle">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="renewBundle('${bundle.id}')" class="text-purple-600 hover:text-purple-900" title="Renew Lease">
+                                <i class="fas fa-redo text-sm"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Lease bundle action functions
+        function viewLeaseAgreement(bundleId) {
+            // Sample lease bundle data for lookup
+            const leaseBundles = [
+                {
+                    id: 'LB-001',
+                    agreementId: 'LA-2023-001',
+                    name: 'Science Lab Equipment Bundle',
+                    supplier: 'TechEd Solutions',
+                    assetCount: 25,
+                    monthlyPayment: 1250.00,
+                    totalValue: 45000.00,
+                    startDate: '2023-01-15',
+                    expiryDate: '2025-01-15',
+                    status: 'active',
+                    agreementPdf: 'science_lab_lease_agreement.pdf',
+                    contactPerson: 'John Smith',
+                    contactEmail: 'john.smith@techedsolutions.com',
+                    contactPhone: '(555) 123-4567'
+                },
+                {
+                    id: 'LB-002',
+                    agreementId: 'LA-2023-002',
+                    name: 'Staff Laptop Bundle',
+                    supplier: 'Dell Business',
+                    assetCount: 15,
+                    monthlyPayment: 890.00,
+                    totalValue: 32000.00,
+                    startDate: '2023-06-01',
+                    expiryDate: '2025-06-01',
+                    status: 'active',
+                    agreementPdf: 'dell_laptop_lease_agreement.pdf',
+                    contactPerson: 'Sarah Johnson',
+                    contactEmail: 'sarah.johnson@dell.com',
+                    contactPhone: '(555) 987-6543'
+                },
+                {
+                    id: 'LB-003',
+                    agreementId: 'LA-2023-003',
+                    name: 'Interactive Display Bundle',
+                    supplier: 'Samsung Education',
+                    assetCount: 8,
+                    monthlyPayment: 2100.00,
+                    totalValue: 75600.00,
+                    startDate: '2023-03-20',
+                    expiryDate: '2025-03-20',
+                    status: 'expiring',
+                    agreementPdf: 'samsung_display_lease_agreement.pdf',
+                    contactPerson: 'Michael Chen',
+                    contactEmail: 'michael.chen@samsung.com',
+                    contactPhone: '(555) 456-7890'
+                }
+            ];
+
+            const bundle = leaseBundles.find(b => b.id === bundleId);
+            if (bundle) {
+                // In a real application, this would open the actual PDF file
+                // For demo purposes, we'll show information about the agreement
+                alert(`📄 Lease Agreement Document\n\n` +
+                      `Agreement ID: ${bundle.agreementId}\n` +
+                      `Bundle: ${bundle.name}\n` +
+                      `Supplier: ${bundle.supplier}\n` +
+                      `Contact: ${bundle.contactPerson}\n` +
+                      `Email: ${bundle.contactEmail}\n` +
+                      `Phone: ${bundle.contactPhone}\n\n` +
+                      `File: ${bundle.agreementPdf}\n\n` +
+                      `💡 In a real system, this would:\n` +
+                      `• Open the PDF document in a new tab\n` +
+                      `• Allow downloading the agreement\n` +
+                      `• Show document upload/replacement options\n` +
+                      `• Track document access history`);
+            }
+        }
+
+        function viewBundleAssets(bundleId) {
+            alert(`📋 Bundle Assets Overview\n\n` +
+                  `This would show all ${bundleId === 'LB-001' ? '25' : bundleId === 'LB-002' ? '15' : '8'} assets included in this lease bundle:\n\n` +
+                  `• Individual asset details\n` +
+                  `• Asset locations and assignments\n` +
+                  `• Maintenance history\n` +
+                  `• Asset-specific lease terms\n` +
+                  `• Replacement/upgrade options`);
+        }
+
+        function editBundle(bundleId) {
+            if (!editModeEnabled) {
+                alert('Please enable edit mode to edit lease bundles.');
+                return;
+            }
+            alert(`✏️ Edit Lease Bundle ${bundleId}\n\n` +
+                  `This would open a comprehensive form to modify:\n\n` +
+                  `📋 Bundle Details:\n` +
+                  `• Bundle name and description\n` +
+                  `• Asset list and quantities\n` +
+                  `• Lease agreement ID\n\n` +
+                  `💰 Financial Terms:\n` +
+                  `• Monthly payment amount\n` +
+                  `• Total lease value\n` +
+                  `• Payment schedule\n\n` +
+                  `🏢 Supplier Information:\n` +
+                  `• Supplier contact details\n` +
+                  `• Agreement terms\n` +
+                  `• Upload new agreement PDF\n\n` +
+                  `📅 Dates & Status:\n` +
+                  `• Lease start/end dates\n` +
+                  `• Renewal options\n` +
+                  `• Bundle status`);
+        }
+
+        function renewBundle(bundleId) {
+            alert(`🔄 Renew Lease Bundle ${bundleId}\n\n` +
+                  `This would initiate the lease renewal process:\n\n` +
+                  `📋 Renewal Steps:\n` +
+                  `• Review current lease terms\n` +
+                  `• Contact supplier for renewal options\n` +
+                  `• Negotiate new terms if needed\n` +
+                  `• Update payment schedules\n` +
+                  `• Upload new agreement documents\n\n` +
+                  `📧 Automated Actions:\n` +
+                  `• Send renewal request to supplier\n` +
+                  `• Schedule renewal meetings\n` +
+                  `• Set renewal reminders\n` +
+                  `• Update lease expiry dates\n\n` +
+                  `💡 The system would guide you through each step of the renewal process.`);
+        }
+
+        // Initialize
+        populateLocationFilters();
+        applyFilters();
+        updateDashboard();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95b3246502c0d9b3',t:'MTc1MTg0NzI3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
+
+<!----comment node----><!--a=1--></body></html>
