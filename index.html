@@ -704,10 +704,11 @@
     </div>
 
     <script>
-  // ─── Supabase setup ────────────────────────────────────────────────────
-  const supabaseUrl = 'https://zjjzumfocopbkjqfytkb.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
-  const supabase   = supabase.createClient(supabaseUrl, supabaseKey);
+ // ─── Supabase setup ──────────────────────
+const supabaseUrl  = 'https://zjjzumfocopbkjqfytkb.supabase.co';
+const supabaseKey  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…';
+const supabase     = supabase.createClient(supabaseUrl, supabaseKey);
+
 
   // ─── Local cache ───────────────────────────────────────────────────────
   let assets = [];
