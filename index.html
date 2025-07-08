@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <!-- Supabase JS client -->
+    <!-- ─── Supabase JS client ─────────────────────────────────────────── -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -1021,15 +1021,30 @@
     </div>
 
     <script>
-        // Sample asset data
-        // Supabase setup
+    // ─── Supabase setup ─────────────────────────────────────────────────────
     const { createClient } = window.supabase;
-    const supabaseUrl = 'https://zjjzumfocopbkjqfytkb.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl       = 'https://zjjzumfocopbkjqfytkb.supabase.co';
+    const supabaseKey       = 'YOUR_FULL_ANON_KEY_HERE';
+    const supabase          = createClient(supabaseUrl, supabaseKey);
 
-    // Local cache
+    // ─── Local cache ───────────────────────────────────────────────────────
     let assets = [];
+
+    // ─── Fetch & render from Supabase on demand ───────────────────────────
+    async function fetchAssets() {
+        const { data, error } = await supabase
+            .from('active_assets')
+            .select('*')
+            .order('asset_id', { ascending: true });
+        if (error) {
+            console.error('Error fetching:', error.message, error.details);
+            return;
+        }
+        assets = data;
+        populateLocationFilters();
+        applyFilters();
+        updateDashboard();
+    }
 
 
         let selectedAssets = new Set();
@@ -1639,10 +1654,15 @@
             document.getElementById('qrScannerModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // Initialize QR scanner
-            html5QrCode = new Html5Qrcode("qr-reader");
-
-            // Start scanning
+    // ─── Bootstrap after DOM & helpers loaded ───────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchAssets();
+        // Optional real-time updates (un-comment if supported)
+        // supabase
+        //   .channel('public:active_assets')
+        //   .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
+        //   .subscribe();
+    });
             html5QrCode.start(
                 { facingMode: "environment" }, // Use back camera
                 {
@@ -3046,24 +3066,16 @@
                   `💡 The system would guide you through each step of the renewal process.`);
         }
 
-        // Initialize
-        populateLocationFilters();
-        applyFilters();
-        updateDashboard();
+    // ─── Bootstrap after DOM & helpers loaded ───────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchAssets();
+        // Optional real-time updates (un-comment if supported)
+        // supabase
+        //   .channel('public:active_assets')
+        //   .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
+        //   .subscribe();
+    });
     </script>
-
-   <!-- ─── Bootstrap after DOM & helpers loaded ──────────────────────────── -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetchAssets();
-    // If you want real-time back in, un-comment this:
-    // supabase
-    //   .channel('public:active_assets')
-    //   .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
-    //   .subscribe();
-  });
-</script>
-
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95b3246502c0d9b3',t:'MTc1MTg0NzI3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 <!----comment node----><!--a=1--></body></html>
