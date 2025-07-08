@@ -2069,7 +2069,12 @@
                             if (!newAsset.location) newAsset.location = 'Unassigned';
                             if (!newAsset.assignedTo) newAsset.assignedTo = 'Unassigned';
 
-                            assets.push(newAsset);
+                            async function addAsset(newAsset) {
+  const { error } = await supabase.from('active_assets').insert([newAsset]);
+  if (error) return alert('Failed to add');
+  fetchAssets();
+}
+
                             importedCount++;
 
                         } catch (lineError) {
