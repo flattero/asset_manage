@@ -1,5 +1,4 @@
-<html lang="en"><script async="" defer="" src="chrome-extension://pcblbflgdkdfdjpjifeppkljdnaekohj/GdocApi.0c843771.js" type="text/javascript"></script>
-    <head>
+<html lang="en"><script async="" defer="" src="chrome-extension://pcblbflgdkdfdjpjifeppkljdnaekohj/GdocApi.0c843771.js" type="text/javascript"></script><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SchoolTech Asset Manager</title>
@@ -8,8 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Supabase JS client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -1022,20 +1021,16 @@
     </div>
 
     <script>
+        // Sample asset data
+        // Supabase setup
+    const { createClient } = window.supabase;
+    const supabaseUrl = 'https://zjjzumfocopbkjqfytkb.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-        <script>
-  // ─── Supabase setup ─────────────────────────────────────────────────────
-  const { createClient } = window.supabase;
-  const supabaseUrl       = 'https://zjjzumfocopbkjqfytkb.supabase.co';
-  const supabaseKey       = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
-  const supabase          = createClient(supabaseUrl, supabaseKey);
+    // Local cache
+    let assets = [];
 
-  // ─── Local cache ───────────────────────────────────────────────────────
-  let assets = [];
-
-        async function fetchAssets() {
-  // … Supabase .from('active_assets') select code …
-}
 
         let selectedAssets = new Set();
         let editModeEnabled = false;
@@ -2069,12 +2064,7 @@
                             if (!newAsset.location) newAsset.location = 'Unassigned';
                             if (!newAsset.assignedTo) newAsset.assignedTo = 'Unassigned';
 
-                            async function addAsset(newAsset) {
-  const { error } = await supabase.from('active_assets').insert([newAsset]);
-  if (error) return alert('Failed to add');
-  fetchAssets();
-}
-
+                            assets.push(newAsset);
                             importedCount++;
 
                         } catch (lineError) {
@@ -3056,19 +3046,21 @@
                   `💡 The system would guide you through each step of the renewal process.`);
         }
 
-      // ─── Bootstrap after DOM & helpers loaded ─────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  // Load data from Supabase and render
-  fetchAssets();
-
-  // (Optional) Real-time updates — comment-in if your host supports websockets
-  // supabase
-  //   .channel('public:active_assets')
-  //   .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
-  //   .subscribe();
-});
-
+        // Initialize
+        populateLocationFilters();
+        applyFilters();
+        updateDashboard();
     </script>
+
+    // Bootstrap after DOM & helpers loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchAssets();
+        // Uncomment below if real-time is needed
+        // supabase
+        //   .channel('public:active_assets')
+        //   .on('postgres_changes', { event: '*', schema: 'public', table: 'active_assets' }, fetchAssets)
+        //   .subscribe();
+    });
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95b3246502c0d9b3',t:'MTc1MTg0NzI3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;"></iframe>
 
 <!----comment node----><!--a=1--></body></html>
