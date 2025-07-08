@@ -1041,33 +1041,34 @@
             return;
         }
   // Map snake_case → camelCase so your existing render logic still works
-  assets = data.map(row => ({
+  assets = data
+  .map(row => ({
     id:             row.id,
-    assetId:        row.asset_id,
-    serialNumber:   row.serial_number,
-    deviceName:     row.device_name,
-    deviceType:     row.device_type,
-    brandModel:     row.brand_model,
-    serialNumber:   row.serial_number,
-    macAddress:     row.mac_address,
-    barcode:        row.barcode,
-    qrCode:         row.qr_code,
-    location:       row.location,
-    assignedTo:     row.assigned_to,
-    departmentYear: row.department_year,
-    loanEndDate:    row.loan_end_date,
-    purchaseDate:   row.purchase_date,
-    purchaseCost:   row.purchase_cost,
-    warrantyStart:  row.warranty_start,
-    warrantyEnd:    row.warranty_end,
-    supplier:       row.supplier,
-    ownershipType:  row.ownership_type,
-    status:         row.status,
-    notes:          row.notes,
-    leaseBundleId:  row.lease_bundle_id,
-    lastUpdatedBy:  row.last_updated_by,
-    updatedAt:      row.updated_at,
+    assetId:        row.asset_id       ?? '',
+    deviceName:     row.device_name    ?? '',
+    deviceType:     row.device_type    ?? '',
+    brandModel:     row.brand_model    ?? '',
+    serialNumber:   row.serial_number  ?? '',
+    macAddress:     row.mac_address     ?? '',
+    barcode:        row.barcode        ?? '',
+    qrCode:         row.qr_code        ?? '',
+    location:       row.location       ?? '',
+    assignedTo:     row.assigned_to    ?? '',
+    department:     row.department_year?? '',
+    loanEndDate:    row.loan_end_date  ?? '',
+    purchaseDate:   row.purchase_date  ?? '',
+    purchaseCost:   row.purchase_cost  ?? '',
+    warrantyStart:  row.warranty_start ?? '',
+    warrantyEnd:    row.warranty_end   ?? '',
+    supplier:       row.supplier       ?? '',
+    ownershipType:  row.ownership_type ?? '',
+    status:         row.status         ?? '',
+    notes:          row.notes          ?? '',
+    leaseExpiryDate:row.lease_expiry_date?? '',
+    lastUpdatedBy:  row.last_updated_by?? '',
+    updatedAt:      row.updated_at     ?? '',
   }));
+
         populateLocationFilters();
         applyFilters();
         updateDashboard();
