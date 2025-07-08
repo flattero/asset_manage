@@ -1,4 +1,5 @@
-<html lang="en"><script async="" defer="" src="chrome-extension://pcblbflgdkdfdjpjifeppkljdnaekohj/GdocApi.0c843771.js" type="text/javascript"></script><head>
+<html lang="en"><script async="" defer="" src="chrome-extension://pcblbflgdkdfdjpjifeppkljdnaekohj/GdocApi.0c843771.js" type="text/javascript"></script>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SchoolTech Asset Manager</title>
@@ -7,6 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -1019,125 +1022,20 @@
     </div>
 
     <script>
-        // Sample asset data
-        let assets = [
-            {
-                id: 'SCH-000001',
-                deviceName: 'Staff Laptop 01',
-                deviceType: 'Laptop',
-                brandModel: 'Dell Latitude 5520',
-                serialNumber: 'DL5520001',
-                location: 'Staff Room',
-                assignedTo: 'Sarah Johnson',
-                department: 'English',
-                ownershipType: 'school-owned',
-                operatingSystem: 'Windows',
-                status: 'active',
-                warrantyEnd: '2024-12-15',
-                purchaseDate: '2023-01-15',
-                purchaseCost: 899.99,
-                barcode: '123456789012',
-                qrCode: 'SCH-000001',
-                archived: false
-            },
-            {
-                id: 'SCH-000002',
-                deviceName: 'Student iPad 02',
-                deviceType: 'iPad',
-                brandModel: 'iPad Air 5th Gen',
-                serialNumber: 'IPAD002',
-                location: 'Science Lab',
-                assignedTo: 'Year 8 Class',
-                department: 'Science',
-                ownershipType: 'lease',
-                operatingSystem: 'iPadOS',
-                status: 'active',
-                warrantyEnd: '2025-03-20',
-                leaseExpiryDate: '2025-02-15',
-                purchaseDate: '2023-03-20',
-                purchaseCost: 579.00,
-                barcode: '234567890123',
-                qrCode: 'SCH-000002',
-                archived: false
-            },
-            {
-                id: 'SCH-000003',
-                deviceName: 'Interactive Monitor',
-                deviceType: 'Monitor',
-                brandModel: 'Samsung Interactive Display 75"',
-                serialNumber: 'SAM75003',
-                location: 'Room 101',
-                assignedTo: 'Mathematics Dept',
-                department: 'Mathematics',
-                ownershipType: 'lease-to-own',
-                operatingSystem: 'N/A',
-                status: 'active',
-                warrantyEnd: '2025-06-10',
-                leaseExpiryDate: '2025-01-20',
-                purchaseDate: '2023-06-10',
-                purchaseCost: 2450.00,
-                barcode: '345678901234',
-                qrCode: 'SCH-000003',
-                archived: false
-            },
-            {
-                id: 'SCH-000004',
-                deviceName: 'Staff iPhone 04',
-                deviceType: 'iPhone',
-                brandModel: 'iPhone 14 Pro',
-                serialNumber: 'IPH14004',
-                location: 'IT Department',
-                assignedTo: 'David Wilson',
-                department: 'IT',
-                ownershipType: 'school-owned',
-                operatingSystem: 'iOS',
-                status: 'active',
-                warrantyEnd: '2025-01-30',
-                purchaseDate: '2023-01-30',
-                purchaseCost: 1099.00,
-                barcode: '456789012345',
-                qrCode: 'SCH-000004',
-                archived: false
-            },
-            {
-                id: 'SCH-000005',
-                deviceName: 'USB-C Hub 05',
-                deviceType: 'Dock',
-                brandModel: 'CalDigit TS3 Plus',
-                serialNumber: 'CAL005',
-                location: 'Library',
-                assignedTo: 'Michael Chen',
-                department: 'Science',
-                ownershipType: 'school-owned',
-                operatingSystem: 'N/A',
-                status: 'active',
-                warrantyEnd: '2024-08-15',
-                purchaseDate: '2023-08-15',
-                purchaseCost: 249.00,
-                barcode: '567890123456',
-                qrCode: 'SCH-000005',
-                archived: false
-            },
-            {
-                id: 'SCH-000006',
-                deviceName: 'Apple Pencil 06',
-                deviceType: 'Apple Pencil',
-                brandModel: 'Apple Pencil 2nd Gen',
-                serialNumber: 'APEN006',
-                location: 'Art Room',
-                assignedTo: 'Emma Thompson',
-                department: 'Art',
-                ownershipType: 'school-owned',
-                operatingSystem: 'N/A',
-                status: 'active',
-                warrantyEnd: '2024-11-20',
-                purchaseDate: '2023-11-20',
-                purchaseCost: 129.00,
-                barcode: '678901234567',
-                qrCode: 'SCH-000006',
-                archived: false
-            }
-        ];
+
+        <script>
+  // ─── Supabase setup ─────────────────────────────────────────────────────
+  const { createClient } = window.supabase;
+  const supabaseUrl       = 'https://zjjzumfocopbkjqfytkb.supabase.co';
+  const supabaseKey       = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
+  const supabase          = createClient(supabaseUrl, supabaseKey);
+
+  // ─── Local cache ───────────────────────────────────────────────────────
+  let assets = [];
+
+        async function fetchAssets() {
+  // … Supabase .from('active_assets') select code …
+}
 
         let selectedAssets = new Set();
         let editModeEnabled = false;
