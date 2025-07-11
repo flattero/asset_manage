@@ -1040,6 +1040,51 @@
             console.error('Error fetching:', error.message, error.details);
             return;
         }
+
+
+// ─── Add new asset ──────────────────────────────────────────────────────
+  async function addAsset(newAsset) {
+    // newAsset should be an object whose keys are your snake_case columns,
+    // e.g. { asset_id: 'SCH-000007', serial_number: 'ABC123', … }
+    const { data, error } = await supabase
+      .from('active_assets')
+      .insert([ newAsset ]);     // <-- bulk insert array
+    if (error) {
+      console.error('Insert failed:', error.message);
+      return alert('Failed to add asset: ' + error.message);
+    }
+    // Refresh your table
+    fetchAssets();
+  }
+   // ─── Edit existing asset ───────────────────────────────────────────────
+  async function editAsset(id, updates) {
+    // id is the UUID PK; updates is an object with the snake_case fields to change
+    const { data, error } = await supabase
+      .from('active_assets')
+      .update(updates)           // <-- apply this object
+      .eq('id', id);             // <-- target the row by its PK
+    if (error) {
+      console.error('Update failed:', error.message);
+      return alert('Failed to update asset: ' + error.message);
+    }
+    fetchAssets();
+  }
+
+  // ─── Delete an asset ───────────────────────────────────────────────────
+  async function deleteAsset(id) {
+    if (!confirm('Are you sure you want to delete this asset?')) return;
+    const { error } = await supabase
+      .from('active_assets')
+      .delete()
+      .eq('id', id);
+    if (error) {
+      console.error('Delete failed:', error.message);
+      return alert('Failed to delete asset: ' + error.message);
+    }
+    fetchAssets();
+  }     
+
+        
   // Map snake_case → camelCase so your existing render logic still works
   assets = data
   .map(row => ({
@@ -1225,6 +1270,8 @@
                                 <i class="fas fa-edit text-sm"></i>
                             </button>
                             <button onclick="deleteAsset('${asset.id}')" class="text-red-600 hover:text-red-900 ${editModeEnabled ? '' : 'hidden'}" title="Delete Asset">
+                                <i class="fas fa-trash text-sm"></i>
+                                <button onclick="addAsset(getFormData())">Save New Asset</button>
                                 <i class="fas fa-trash text-sm"></i>
                             </button>
                         </div>
