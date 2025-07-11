@@ -1084,6 +1084,8 @@
     fetchAssets();
   }     
 
+
+
         
   // Map snake_case → camelCase so your existing render logic still works
   assets = data
@@ -1271,6 +1273,7 @@
                             </button>
                             <button onclick="deleteAsset('${asset.id}')" class="text-red-600 hover:text-red-900 ${editModeEnabled ? '' : 'hidden'}" title="Delete Asset">
                                 <i class="fas fa-trash text-sm"></i>
+                            </button>
                                 <button onclick="addAsset(getFormData())">Save New Asset</button>
                                 <i class="fas fa-trash text-sm"></i>
                             </button>
