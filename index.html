@@ -9,6 +9,15 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <!-- ─── Supabase JS client ─────────────────────────────────────────── -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <script>
+    // Supabase setup
+    const { createClient } = window.supabase;
+    const supabaseUrl = 'https://zjjzumfocopbkjqfytkb.supabase.co';
+    const supabaseKey = 'YOUR_FULL_ANON_KEY_HERE';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+  </script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -1022,10 +1031,7 @@
 
     <script>
     // ─── Supabase setup ─────────────────────────────────────────────────────
-    const { createClient } = window.supabase;
-    const supabaseUrl       = 'https://zjjzumfocopbkjqfytkb.supabase.co';
-    const supabaseKey       = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqanp1bWZvY29wYmtqcWZ5dGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4NzEwMDQsImV4cCI6MjA2NzQ0NzAwNH0.A9Jz-FC679uPe4zfxqSQLZ61hSt-IS7U7tPr0jQrdQU';
-    const supabase          = createClient(supabaseUrl, supabaseKey);
+    
 
     // ─── Local cache ───────────────────────────────────────────────────────
     let assets = [];
@@ -1320,16 +1326,15 @@ async function deleteAsset(id) {
 
         // Modal functions
         function generateAssetId() {
-            const prefix = 'SCH-';
-            // Use the human-readable assetId field, ensure string
-            const existingIds = assets.map(a => String(a.assetId || ''));
-            // Filter and parse numeric suffix
-            const numbers = existingIds
-                .filter(id => id.startsWith(prefix))
-                .map(id => parseInt(id.slice(prefix.length), 10) || 0);
-            const maxNum = numbers.length ? Math.max(...numbers) : 0;
-            const nextNumber = String(maxNum + 1).padStart(6, '0');
-            return `SCH-${nextNumber}`;
+    const prefix = 'SCH-';
+    const existingIds = assets.map(a => String(a.assetId || ''));
+    const numbers = existingIds
+        .filter(id => id.startsWith(prefix))
+        .map(id => parseInt(id.slice(prefix.length), 10) || 0);
+    const maxNum = numbers.length ? Math.max(...numbers) : 0;
+    const nextNumber = String(maxNum + 1).padStart(6, '0');
+    return `SCH-${nextNumber}`;
+}`;
         }
 
         function generateNewAssetId() {
@@ -1612,107 +1617,56 @@ async function deleteAsset(id) {
         }
 
         // Form submission
-        document.getElementById('assetForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Prevent multiple submissions
-            const submitBtn = this.querySelector('button[type="submit"]');
-            if (submitBtn.disabled) return;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Saving...';
-
-            const formData = new FormData(this);
-            const assetData = {};
-
-            for (let [key, value] of formData.entries()) {
-                assetData[key] = value;
-            }
-
-            // Ensure we have the asset ID from the form
-            if (!assetData.assetId) {
-                assetData.assetId = generateAssetId();
-            }
-
-            // Map form field names to asset properties
-            const mappedAssetData = {
-                id: assetData.assetId,
-                deviceName: assetData.deviceName,
-                deviceType: assetData.deviceType,
-                brandModel: assetData.brandModel,
-                serialNumber: assetData.serialNumber,
-                location: assetData.location,
-                assignedTo: assetData.assignedTo,
-                department: assetData.department,
-                ownershipType: assetData.ownershipType,
-                operatingSystem: assetData.operatingSystem,
-                status: assetData.status,
-                warrantyStart: assetData.warrantyStart,
-                warrantyEnd: assetData.warrantyEnd,
-                leaseExpiryDate: assetData.leaseExpiryDate,
-                purchaseDate: assetData.purchaseDate,
-                purchaseCost: assetData.purchaseCost ? parseFloat(assetData.purchaseCost) : 0,
-                supplier: assetData.supplier,
-                macAddress: assetData.macAddress,
-                barcode: assetData.barcode,
-                qrCode: assetData.qrCode,
-                loanEndDate: assetData.loanEndDate,
-                notes: assetData.notes,
-                archived: false
-            };
-
-            // Get the original asset ID if editing
-            const modalTitle = document.getElementById('modalTitle').textContent;
-            const isEditing = modalTitle === 'Edit Asset';
-            let originalAssetId = null;
-
-            if (isEditing) {
-                // Find the original asset being edited
-                const form = document.getElementById('assetForm');
-                originalAssetId = form.dataset.originalId;
-            }
-
-            // Check for duplicate Asset ID (only if it's a new asset or the ID has changed)
-            const isDuplicateId = assets.some(asset =>
-                asset.id === mappedAssetData.id &&
-                (!isEditing || asset.id !== originalAssetId)
-            );
-
-            if (isDuplicateId) {
-                alert('Asset ID already exists. Please use a different Asset ID.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Save Asset';
-                return;
-            }
-
-            // Simulate processing time then complete
-            setTimeout(() => {
-                try {
-                    // Check if editing existing asset
-                    const existingIndex = assets.findIndex(a => a.id === (originalAssetId || mappedAssetData.id));
-                    if (existingIndex !== -1 && isEditing) {
-                        assets[existingIndex] = { ...assets[existingIndex], ...mappedAssetData };
-                        populateLocationFilters();
-                        applyFilters();
-                        updateDashboard();
-                        alert('Asset updated successfully!');
-                        closeModal();
-                    } else {
-                        assets.push(mappedAssetData);
-                        populateLocationFilters();
-                        applyFilters();
-                        updateDashboard();
-                        alert('New asset added successfully!');
-                        closeModal();
-                    }
-                } catch (error) {
-                    console.error('Error saving asset:', error);
-                    alert('Error saving asset. Please try again.');
-                    // Reset button state on error
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Save Asset';
-                }
-            }, 500);
-        });
+        document.getElementById('assetForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const isEditing = !!form.dataset.assetId;
+    const payload = {
+        asset_id:       form.querySelector('#assetIdInput').value,
+        serial_number:  form.querySelector('#serialInput').value,
+        device_name:    form.querySelector('#deviceNameInput').value,
+        device_type:    form.querySelector('#deviceTypeInput').value,
+        brand_model:    form.querySelector('#brandModelInput').value,
+        mac_address:    form.querySelector('#macAddressInput').value,
+        barcode:        form.querySelector('#barcodeInput').value,
+        qr_code:        form.querySelector('#qrCodeInput').value,
+        location:       form.querySelector('#locationInput').value,
+        assigned_to:    form.querySelector('#assignedToInput').value,
+        department_year:form.querySelector('#departmentInput').value,
+        purchase_date:  form.querySelector('#purchaseDateInput').value,
+        purchase_cost:  parseFloat(form.querySelector('#purchaseCostInput').value) || 0,
+        warranty_start: form.querySelector('#warrantyStartInput').value,
+        warranty_end:   form.querySelector('#warrantyEndInput').value,
+        supplier:       form.querySelector('#supplierInput').value,
+        ownership_type: form.querySelector('#ownershipTypeInput').value,
+        status:         form.querySelector('#statusSelect').value,
+        loan_end_date:  form.querySelector('#loanEndDateInput').value,
+        notes:          form.querySelector('#notesInput').value,
+        archived:       false
+    };
+    try {
+        let res;
+        if (isEditing) {
+            const original = form.dataset.assetId;
+            res = await supabase
+                .from('active_assets')
+                .update(payload)
+                .eq('asset_id', original);
+        } else {
+            res = await supabase
+                .from('active_assets')
+                .insert([payload]);
+        }
+        if (res.error) throw res.error;
+        await fetchAssets();
+        form.reset();
+        closeModal();
+        alert(isEditing ? 'Asset updated!' : 'New asset added!');
+    } catch (err) {
+        console.error('Save error:', err);
+        alert('Save failed: ' + err.message);
+    }
+});
 
         // QR Scanner variables
         let html5QrCode = null;
