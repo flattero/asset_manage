@@ -1613,107 +1613,84 @@
         }
 
         // Form submission
-        document.getElementById('assetForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        <script>
+// ─── Form submission ───────────────────────────────────────────────────
+document.getElementById('assetForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn.disabled) return;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Saving…';
 
-            // Prevent multiple submissions
-            const submitBtn = this.querySelector('button[type="submit"]');
-            if (submitBtn.disabled) return;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Saving...';
+  // Gather form data
+  const formData = new FormData(this);
+  const assetData = {};
+  formData.forEach((val, key) => assetData[key] = val);
 
-            const formData = new FormData(this);
-            const assetData = {};
+  // Auto-generate Asset ID if blank
+  if (!assetData.assetId) {
+    assetData.assetId = generateAssetId();
+  }
 
-            for (let [key, value] of formData.entries()) {
-                assetData[key] = value;
-            }
+  // Build the snake_case payload for Supabase
+  const payload = {
+    asset_id:        assetData.assetId,
+    device_name:     assetData.deviceName || null,
+    device_type:     assetData.deviceType || null,
+    brand_model:     assetData.brandModel || null,
+    serial_number:   assetData.serialNumber || null,
+    location:        assetData.location || null,
+    assigned_to:     assetData.assignedTo || null,
+    department_year: assetData.department || null,
+    ownership_type:  assetData.ownershipType || null,
+    operating_system:assetData.operatingSystem || null,
+    status:          assetData.status || null,
+    warranty_start:  assetData.warrantyStart || null,
+    warranty_end:    assetData.warrantyEnd || null,
+    lease_expiry_date: assetData.leaseExpiryDate || null,
+    purchase_date:   assetData.purchaseDate || null,
+    purchase_cost:   assetData.purchaseCost ? parseFloat(assetData.purchaseCost) : 0,
+    supplier:        assetData.supplier || null,
+    mac_address:     assetData.macAddress || null,
+    barcode:         assetData.barcode || null,
+    qr_code:         assetData.qrCode || null,
+    loan_end_date:   assetData.loanEndDate || null,
+    notes:           assetData.notes || null,
+    archived:        false
+  };
 
-            // Ensure we have the asset ID from the form
-            if (!assetData.assetId) {
-                assetData.assetId = generateAssetId();
-            }
+  // Determine if we’re editing
+  const isEdit = this.dataset.originalId != null;
+  try {
+    if (isEdit) {
+      // Update existing row
+      const { error } = await supabase
+        .from('active_assets')
+        .update(payload)
+        .eq('id', this.dataset.originalId);
+      if (error) throw error;
+      alert('Asset updated successfully!');
+    } else {
+      // Insert new row
+      const { error } = await supabase
+        .from('active_assets')
+        .insert([ payload ]);
+      if (error) throw error;
+      alert('New asset added successfully!');
+    }
+    // Refresh table and close
+    await fetchAssets();
+    closeModal();
+  } catch (err) {
+    console.error('Save failed:', err.message);
+    alert('Error saving asset: ' + err.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Save Asset';
+  }
+});
+</script>
 
-            // Map form field names to asset properties
-            const mappedAssetData = {
-                id: assetData.assetId,
-                deviceName: assetData.deviceName,
-                deviceType: assetData.deviceType,
-                brandModel: assetData.brandModel,
-                serialNumber: assetData.serialNumber,
-                location: assetData.location,
-                assignedTo: assetData.assignedTo,
-                department: assetData.department,
-                ownershipType: assetData.ownershipType,
-                operatingSystem: assetData.operatingSystem,
-                status: assetData.status,
-                warrantyStart: assetData.warrantyStart,
-                warrantyEnd: assetData.warrantyEnd,
-                leaseExpiryDate: assetData.leaseExpiryDate,
-                purchaseDate: assetData.purchaseDate,
-                purchaseCost: assetData.purchaseCost ? parseFloat(assetData.purchaseCost) : 0,
-                supplier: assetData.supplier,
-                macAddress: assetData.macAddress,
-                barcode: assetData.barcode,
-                qrCode: assetData.qrCode,
-                loanEndDate: assetData.loanEndDate,
-                notes: assetData.notes,
-                archived: false
-            };
-
-            // Get the original asset ID if editing
-            const modalTitle = document.getElementById('modalTitle').textContent;
-            const isEditing = modalTitle === 'Edit Asset';
-            let originalAssetId = null;
-
-            if (isEditing) {
-                // Find the original asset being edited
-                const form = document.getElementById('assetForm');
-                originalAssetId = form.dataset.originalId;
-            }
-
-            // Check for duplicate Asset ID (only if it's a new asset or the ID has changed)
-            const isDuplicateId = assets.some(asset =>
-                asset.id === mappedAssetData.id &&
-                (!isEditing || asset.id !== originalAssetId)
-            );
-
-            if (isDuplicateId) {
-                alert('Asset ID already exists. Please use a different Asset ID.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Save Asset';
-                return;
-            }
-
-            // Simulate processing time then complete
-            setTimeout(() => {
-                try {
-                    // Check if editing existing asset
-                    const existingIndex = assets.findIndex(a => a.id === (originalAssetId || mappedAssetData.id));
-                    if (existingIndex !== -1 && isEditing) {
-                        assets[existingIndex] = { ...assets[existingIndex], ...mappedAssetData };
-                        populateLocationFilters();
-                        applyFilters();
-                        updateDashboard();
-                        alert('Asset updated successfully!');
-                        closeModal();
-                    } else {
-                        assets.push(mappedAssetData);
-                        populateLocationFilters();
-                        applyFilters();
-                        updateDashboard();
-                        alert('New asset added successfully!');
-                        closeModal();
-                    }
-                } catch (error) {
-                    console.error('Error saving asset:', error);
-                    alert('Error saving asset. Please try again.');
-                    // Reset button state on error
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Save Asset';
-                }
-            }, 500);
-        });
 
         // QR Scanner variables
         let html5QrCode = null;
