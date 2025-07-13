@@ -2022,7 +2022,6 @@ document.getElementById('assetForm').addEventListener('submit', async function(e
                             // Parse CSV line properly handling quoted values
                             const values = parseCSVLine(line);
                             const newAsset = {
-                                archived: false
                             };
 
                             headers.forEach((header, index) => {
